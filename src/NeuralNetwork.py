@@ -160,8 +160,8 @@ class NeuralNetwork:
 			epoch += 1
 			
 			
-		plt.plot(range(len(losses)), losses)
-		plt.show()
+		#~ plt.plot(list(range(len(losses))), losses)
+		#~ plt.show()
 				
 	def update_weights(self):
 		
@@ -219,75 +219,66 @@ class NeuralNetwork:
 		return [n.getValue() for n in self.lista_neuroni[-1]]	
 	
 	def dump (self):
-		print "*** INPUT LAYER ***"
+		print("*** INPUT LAYER ***")
 		for i in range (len(self.lista_neuroni[0])):
-			print "neurone", i, ":", self.lista_neuroni[0][i]
-			print "output: ",self.lista_neuroni[0][i].getValue()
-			print "archi uscenti:"
+			print("neurone", i, ":", self.lista_neuroni[0][i])
+			print("output: ",self.lista_neuroni[0][i].getValue())
+			print("archi uscenti:")
 			for j in self.archi_uscenti[0][i]:
-				print "->",j
-			print
+				print("->",j)
+			print()
 		
 		for layer in range (1,len (self.lista_neuroni)-1 ):
-			print "*** LAYER",layer,"***"
+			print("*** LAYER",layer,"***")
 			for i in range (len(self.lista_neuroni[layer])):
-				print "archi entranti:"
+				print("archi entranti:")
 				for j in self.archi_entranti[layer][i]:
-					print j,"w=",self.lista_neuroni[layer][i].weights[j],"->"
-					print j,"-----",self.lista_neuroni[layer][i].old_dw[j],"->"
-				print "neurone", i, ":", self.lista_neuroni[layer][i]
-				print "output: ",self.lista_neuroni[layer][i].getValue()
-				print "archi uscenti:"
+					print(j,"w=",self.lista_neuroni[layer][i].weights[j],"->")
+					print(j,"-----",self.lista_neuroni[layer][i].old_dw[j],"->")
+				print("neurone", i, ":", self.lista_neuroni[layer][i])
+				print("output: ",self.lista_neuroni[layer][i].getValue())
+				print("archi uscenti:")
 				for j in self.archi_uscenti[layer][i]:
-					print "->",j
-				print
+					print("->",j)
+				print()
 		
-		print "*** OUTPUT LAYER ***"
+		print("*** OUTPUT LAYER ***")
 		for i in range (len(self.lista_neuroni[-1])):
-			print "archi entranti:"
+			print("archi entranti:")
 			for j in self.archi_entranti[-1][i]:
-				print j,"w=",self.lista_neuroni[-1][i].weights[j],"->"
-				print j,"-----",self.lista_neuroni[-1][i].old_dw[j],"->"
-			print "neurone", i, ":", self.lista_neuroni[-1][i]
-			print "output: ",self.lista_neuroni[-1][i].getValue()
-			print
+				print(j,"w=",self.lista_neuroni[-1][i].weights[j],"->")
+				print(j,"-----",self.lista_neuroni[-1][i].old_dw[j],"->")
+			print("neurone", i, ":", self.lista_neuroni[-1][i])
+			print("output: ",self.lista_neuroni[-1][i].getValue())
+			print()
 		
 if __name__=="__main__":
 	
-	myNN = NeuralNetwork()
+	train_sets   = [ Monk.monk1_training_set, Monk.monk2_training_set, Monk.monk3_training_set ]
+	train_labels = [ Monk.monk1_training_labels, Monk.monk2_training_labels, Monk.monk3_training_labels ]
+	test_sets    = [ Monk.monk1_test_set, Monk.monk2_test_set, Monk.monk3_test_set ]
+	test_labels  = [ Monk.monk1_test_labels, Monk.monk2_test_labels, Monk.monk3_test_labels ]
 	
-	dataset = Monk.training_set
-
-	testset = Monk.test_set
-	
-	labels = Monk.training_labels
-	
-	testlabels = Monk.test_labels
+	for i, train_s, train_l, test_s, test_l in zip ( [1,2,3], train_sets, train_labels, test_sets, test_labels ):
 		
-	myNN.setInputDim (len(dataset[0]))
-	myNN.setOutputDim (len(labels[0]))
-	
-	myNN.addLayer(8)
-	
-	myNN.buildGraph()
-	
-	
-	myNN.learn(dataset, labels)
-	#~ myNN.learn(dataset[:100], labels[:100])
+		print ("--- MONK {} ---".format(i))
+		
+		myNN = NeuralNetwork()	
+		myNN.setInputDim (len(train_s[0]))
+		myNN.setOutputDim (len(train_l[0]))
+		myNN.addLayer(8)
+		myNN.buildGraph()
+		
+		myNN.learn(train_s, train_l)
+		
+		l=[]
+		for x,y in zip(train_s, train_l):
+			l.append(1 if ((myNN.predict(x)[0]>0.5 and y[0]>0.5) or (myNN.predict(x)[0]<=0.5 and y[0]<=0.5)) else 0)
+			
+		print ("Accuracy on train set {}".format ( (sum(l)*1.0/len(l))) )
 
-	i=0
-	l=[]
-	for x in testset:
-		l.append(1 if ((myNN.predict(x)[0]>0.5 and testlabels[i][0]>0.5) or (myNN.predict(x)[0]<=0.5 and testlabels[i][0]<=0.5)) else 0)
-		i+=1
-	
-	print sum(l)*1.0/len(l)
+		for x,y in zip(test_s, test_l):
+			l.append(1 if ((myNN.predict(x)[0]>0.5 and y[0]>0.5) or (myNN.predict(x)[0]<=0.5 and y[0]<=0.5)) else 0)
+			
+		print ("Accuracy on test set {}".format ( (sum(l)*1.0/len(l))) )
 
-
-	i=0
-	l=[]
-	for x in dataset:
-		l.append(1 if ((myNN.predict(x)[0]>0.5 and labels[i][0]>0.5) or (myNN.predict(x)[0]<=0.5 and labels[i][0]<=0.5)) else 0)
-		i+=1
-	print sum(l)*1.0/len(l)
-	
