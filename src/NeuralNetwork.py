@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 import Params
 import Neuron
-import Loss
+import Statistics
 import Monk
 
 class NeuralNetwork:
@@ -25,6 +25,8 @@ class NeuralNetwork:
 		self.layersDim = []
 		
 		self.normalization_factor = 0
+		
+		self.validation_set = None
 		
 	def fire_network (self, instance):
 		
@@ -69,7 +71,7 @@ class NeuralNetwork:
 		
 		self.addUnits()
 		
-		constant_weigth_initializer = Params.constant_weigth_initializer_initializer ()
+		#~ constant_weigth_initializer = Params.constant_weigth_initializer_initializer ()
 		
 		#archi entranti nell'input
 		self.archi_entranti.append([])
@@ -130,45 +132,66 @@ class NeuralNetwork:
 			lista.append(Neuron.Neuron())
 		self.lista_neuroni.append(lista)
 	
+	def set_train (self, train_set, train_labels):
+		self.train_set = train_set
+		self.train_labels = train_labels
+
+	def set_validation (self, validation_set, validation_labels):
+		self.validation_set = validation_set
+		self.validation_labels = validation_labels
+	
+	def learn (self):
+	
+		self.buildGraph()
 		
-	def learn (self, xtrain, ytrain):
-		losses = []
-		
-		
+		self.train_losses = []
+		self.validation_losses = None if self.validation_set is None else []
 		epoch = 0
+		
+		xtrain = self.train_set
+		ytrain = self.train_labels
+		
 		while (epoch < Params.MAX_EPOCH):
-			
-			loss = Loss.Loss()
+					
+			loss = Statistics.MSELoss()
 			self.normalization_factor = self.sum_weights()
 			
-			n=0
-			for x in xtrain:
+			for x,y in zip (xtrain, ytrain):
+				#~ print ("feeding network with example {}".format(x))
 				self.fire_network(x)
-				self.update_backpropagation(ytrain[n])
-				loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], ytrain[n])
-				#~ print [k.getValue() for k in self.lista_neuroni[-1]]
-				n+=1
+				self.update_backpropagation(y)
+				loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
+				
+				#~ print ("after feeding")
+				#~ self.dump()
+				#~ input()
 			
-			self.update_weights()
+			self.update_weights( len(xtrain) )
 			
-			losses.append(loss.loss)
-			#~ print "------------"
-			#~ time.sleep(0.5)
-			#~ print [vars(j) for j in self.lista_neuroni]
-			#~ self.dump ()
-			#~ raw_input()
+			#~ print ("after weight update")
+			#~ self.dump()
+			#~ input()
+			
+			self.train_losses.append(loss.loss/len(xtrain))
+			
+			if self.validation_set is not None:
+				loss = Statistics.MSELoss()
+				for x,y in zip (self.validation_set, self.validation_labels):
+					self.fire_network(x)
+					loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
+				self.validation_losses.append (loss.loss/len(self.validation_set))
+			
 			epoch += 1
 			
 			
-		#~ plt.plot(list(range(len(losses))), losses)
-		#~ plt.show()
 				
-	def update_weights(self):
+	def update_weights(self, examples_number):
 		
 		for l in self.lista_neuroni:
 			for n in l: 
-				n.update_weights(self.normalization_factor)			
+				n.update_weights(self.normalization_factor, examples_number=1)
 	
+	#TODO: try not considering the biases
 	def sum_weights (self):
 		s=0
 		
@@ -234,7 +257,7 @@ class NeuralNetwork:
 				print("archi entranti:")
 				for j in self.archi_entranti[layer][i]:
 					print(j,"w=",self.lista_neuroni[layer][i].weights[j],"->")
-					print(j,"-----",self.lista_neuroni[layer][i].old_dw[j],"->")
+					print(j,"-----",self.lista_neuroni[layer][i].dw[j],"->")
 				print("neurone", i, ":", self.lista_neuroni[layer][i])
 				print("output: ",self.lista_neuroni[layer][i].getValue())
 				print("archi uscenti:")
@@ -247,37 +270,75 @@ class NeuralNetwork:
 			print("archi entranti:")
 			for j in self.archi_entranti[-1][i]:
 				print(j,"w=",self.lista_neuroni[-1][i].weights[j],"->")
-				print(j,"-----",self.lista_neuroni[-1][i].old_dw[j],"->")
+				print(j,"-----",self.lista_neuroni[-1][i].dw[j],"->")
 			print("neurone", i, ":", self.lista_neuroni[-1][i])
 			print("output: ",self.lista_neuroni[-1][i].getValue())
 			print()
-		
+	
+import OneHotEncoder
+
 if __name__=="__main__":
 	
-	train_sets   = [ Monk.monk1_training_set, Monk.monk2_training_set, Monk.monk3_training_set ]
-	train_labels = [ Monk.monk1_training_labels, Monk.monk2_training_labels, Monk.monk3_training_labels ]
-	test_sets    = [ Monk.monk1_test_set, Monk.monk2_test_set, Monk.monk3_test_set ]
-	test_labels  = [ Monk.monk1_test_labels, Monk.monk2_test_labels, Monk.monk3_test_labels ]
 	
-	for i, train_s, train_l, test_s, test_l in zip ( [1,2,3], train_sets, train_labels, test_sets, test_labels ):
+	#MONKs
+	#~ train_sets   = [ Monk.monk1_training_set, Monk.monk2_training_set, Monk.monk3_training_set ]
+	#~ train_labels = [ Monk.monk1_training_labels, Monk.monk2_training_labels, Monk.monk3_training_labels ]
+	#~ test_sets    = [ Monk.monk1_test_set, Monk.monk2_test_set, Monk.monk3_test_set ]
+	#~ test_labels  = [ Monk.monk1_test_labels, Monk.monk2_test_labels, Monk.monk3_test_labels ]
+	
+	#only one MONK
+	train_sets   = [ Monk.monk3_training_set ]
+	train_labels = [ Monk.monk3_training_labels ]
+	test_sets    = [ Monk.monk3_test_set ]
+	test_labels  = [ Monk.monk3_test_labels ]
+	
+	# XOR
+	#~ train_sets = [ [[0, 0], [0,1], [1,0], [1,1]] ]
+	#~ train_labels = [ [[0],  [1],   [1],  [0] ] ]
+	#~ test_sets = [ [[1,1] ] ]
+	#~ test_labels = [ [[0] ] ]
+	
+	for i, train_s, train_l, test_s, test_l in zip ( range(1,len(train_sets)+1), train_sets, train_labels, test_sets, test_labels ):
 		
+		#~ print ("--- TEST {} ---".format(i))
 		print ("--- MONK {} ---".format(i))
 		
-		myNN = NeuralNetwork()	
-		myNN.setInputDim (len(train_s[0]))
-		myNN.setOutputDim (len(train_l[0]))
-		myNN.addLayer(8)
-		myNN.buildGraph()
+		#~ enc = OneHotEncoder (sparse=False)
+		#~ encoded_train_s = enc.fit_transform (train_s)
+		#~ encoded_test_s = enc.fit_transform (test_s)
 		
-		myNN.learn(train_s, train_l)
+		encoded_train_s = OneHotEncoder.encode_int_matrix (train_s)
+		encoded_test_s = OneHotEncoder.encode_int_matrix (test_s)
+		
+		myNN = NeuralNetwork()	
+		myNN.setInputDim (len(encoded_train_s[0]))
+		print ("input dim: {}".format(len(encoded_train_s[0])))
+		myNN.setOutputDim (len(train_l[0]))
+		myNN.addLayer(6)
+		
+		myNN.set_train (encoded_train_s, train_l)
+		myNN.set_validation (encoded_test_s, test_l)
+		
+		myNN.learn()
+		
+		plt.plot(list(range(len(myNN.train_losses))), myNN.train_losses, 'r--', label='train error')
+		plt.plot(list(range(len(myNN.validation_losses))), myNN.validation_losses, 'b-', label='validation error')
+		plt.legend()
+		plt.ylabel('Loss')
+		plt.xlabel('epoch')
+		axes = plt.gca()
+		axes.set_xlim([0,Params.MAX_EPOCH])
+		axes.set_ylim([0,0.2])
+		plt.show()
 		
 		l=[]
-		for x,y in zip(train_s, train_l):
+		for x,y in zip(encoded_train_s, train_l):
 			l.append(1 if ((myNN.predict(x)[0]>0.5 and y[0]>0.5) or (myNN.predict(x)[0]<=0.5 and y[0]<=0.5)) else 0)
 			
 		print ("Accuracy on train set {}".format ( (sum(l)*1.0/len(l))) )
 
-		for x,y in zip(test_s, test_l):
+		l=[]
+		for x,y in zip(encoded_test_s, test_l):
 			l.append(1 if ((myNN.predict(x)[0]>0.5 and y[0]>0.5) or (myNN.predict(x)[0]<=0.5 and y[0]<=0.5)) else 0)
 			
 		print ("Accuracy on test set {}".format ( (sum(l)*1.0/len(l))) )

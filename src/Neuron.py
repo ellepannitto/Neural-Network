@@ -28,50 +28,57 @@ class Neuron:
 		self.compute_net()
 		
 		self.out = self.activation_function(self.net)
+		#~ print ("FIRING NEURON.")
+		#~ print ("inputs  = {}".format(inputs))
+		#~ print ("weights = {}".format(self.weights))
+		#~ print ("net = {}".format(self.net))
+		#~ print ("out = {}".format(self.out))
+		#~ input()
+		
 		return self.out
 
 	def update_backpropagation_output(self, d):
 		
-		self.bp = ( self.out - d ) * self.activation_function_derivative(self.net) 
+		#~ print ("Updating backprop for an output neuron")
+		#~ print ("The one with inputs weights {}".format(self.weights))
 		
+		#~ print ("-dE/do   =  d - out = {}".format(d-self.out))
+		#~ print ("f' (net) = {}".format(self.activation_function_derivative(self.net)))
+		self.bp = ( d - self.out ) * self.activation_function_derivative(self.net)
+		#~ print ("-dE/dnet = (d - self.out)*f'(net) = {}".format(self.bp))
 		
+		#~ print ("Computing dw for each weight")
 		for i in range(len(self.weights)):
+			#~ print ("weight: {}".format(self.weights[i]))
+			#~ print ("input : {}".format(self.inputs[i]))
 			self.dw[i] += self.bp * self.inputs[i]
-		
-		#~ print self.dw
-		#~ raw_input()
+			#~ print ("dw = -dE/dnet * input = {}".format(self.dw[i]))
+			
+			#~ input()
 	
-	def update_backpropagation_hidden(self, neuroni, pesi):
+	def update_backpropagation_hidden (self, neuroni, pesi):
 		
 		s = 0
 		
 		for i in range(len(neuroni)):
 			s+= neuroni[i].getBp () * pesi[i]
 		
-		#~ print s
-		#~ raw_input()	
-		
 		self.bp = s * self.activation_function_derivative (self.net)
-		
-		#~ print self.bp
-		#~ raw_input()
-		
+			
 		for i in range(len(self.weights)):
 			self.dw[i] += self.bp * self.inputs[i]
-		
-		#~ print self.dw
-		#~ raw_input()
 			
-	def update_weights(self, sum_w):
-		
+	def update_weights(self, sum_w, examples_number=1):
 		
 		for i in range(len(self.weights)):
 			
 			self.weights[i] -= 2*Params.LAMBDA * self.weights[i]
-			self.weights[i] -= Params.ETA * self.dw[i] 
-			self.weights[i] -= Params.ALPHA * self.prev_dw[i] 
+			#~ self.weights[i] -= Params.ETA * self.dw[i] / examples_number
+			#~ self.weights[i] -= Params.ALPHA * self.prev_dw[i] 
+			self.weights[i] += Params.ETA * self.dw[i] / examples_number
+			self.weights[i] += Params.ALPHA * self.prev_dw[i] 
 			
-			self.prev_dw[i] = Params.ETA*self.dw[i]
+			self.prev_dw[i] = Params.ETA * self.dw[i] / examples_number + Params.ALPHA * self.prev_dw[i]
 		
 		
 		self.dw = [0]*len(self.dw)
@@ -83,8 +90,7 @@ class Neuron:
 		else:		
 			s = 0
 			for w in self.weights:
-				#~ print w
-				#~ raw_input()
+				#~ print (w)
 				s+=w**2
 			
 			#~ print s

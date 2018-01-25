@@ -23,21 +23,21 @@ def constant_weigth_initializer_initializer ():
 		constant_weigth_initializer.nxt += 1
 		return constant_weigth_initializer.weight_to_assign[constant_weigth_initializer.nxt]
 		
-	constant_weigth_initializer.weight_to_assign = [0.15, 0.2, 0.35, 0.25, 0.30, 0.35, 0.40, 0.45, 0.6, 0.50, 0.55, 0.6]
+	constant_weigth_initializer.weight_to_assign = [0.15, 0.2, 0.35, 0.25, 0.30, 0.35, 0.4, 0.45, 0.6, 0.5, 0.55, 0.6]
 	constant_weigth_initializer.nxt = -1
 	return constant_weigth_initializer 
 
 WEIGHTS = [-700, 700]
 	
 def random_weigth_initializer ():
-	return random.uniform ( WEIGHTS[0], WEIGHTS[1] ) * 1.0 / 1000 
+	return random.uniform ( WEIGHTS[0], WEIGHTS[1] ) * 1.0 / 1000
 
 
 SLOPE = -1
-ETA = 0.04
 
-MAX_EPOCH = 2000
+ETA = 0.07
+ALPHA = 0.5
+LAMBDA = 0.001
 
-ALPHA = 0
+MAX_EPOCH = 200
 
-LAMBDA = 0.0001
