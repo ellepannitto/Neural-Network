@@ -17,8 +17,10 @@ class Accuracy:
 		self.num_patterns = 0
 	
 	def update ( self, predicted, gold ):
+		#~ print ("predicted {}".format(predicted))
+		#~ print ("gold {}".format(gold))
 		self.num_patterns += 1
-		self.correctly_predicted += 1 if all ( [ o==y for o,y in zip (predicted, gold) ] ) else 0
+		self.correctly_predicted += 1 if all ( [ (o-0.5)*(y-0.5)>0 for o,y in zip (predicted, gold) ] ) else 0
 	
 	def get ( self):
-		return self.correctly_predicted / self.num_patterns
+		return self.correctly_predicted*1.0 / self.num_patterns

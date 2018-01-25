@@ -146,6 +146,7 @@ class NeuralNetwork:
 		
 		self.train_losses = []
 		self.validation_losses = None if self.validation_set is None else []
+		self.validation_accuracies = None if self.validation_set is None else []
 		epoch = 0
 		
 		xtrain = self.train_set
@@ -176,10 +177,13 @@ class NeuralNetwork:
 			
 			if self.validation_set is not None:
 				loss = Statistics.MSELoss()
+				accuracy = Statistics.Accuracy ()
 				for x,y in zip (self.validation_set, self.validation_labels):
 					self.fire_network(x)
 					loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
+					accuracy.update ([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
 				self.validation_losses.append (loss.loss/len(self.validation_set))
+				self.validation_accuracies.append (accuracy.get())
 			
 			epoch += 1
 			
@@ -323,12 +327,13 @@ if __name__=="__main__":
 		
 		plt.plot(list(range(len(myNN.train_losses))), myNN.train_losses, 'r--', label='train error')
 		plt.plot(list(range(len(myNN.validation_losses))), myNN.validation_losses, 'b-', label='validation error')
+		plt.plot(list(range(len(myNN.validation_accuracies))), myNN.validation_accuracies, 'k-', label='validation Accuracy')
 		plt.legend()
 		plt.ylabel('Loss')
 		plt.xlabel('epoch')
 		axes = plt.gca()
 		axes.set_xlim([0,Params.MAX_EPOCH])
-		axes.set_ylim([0,0.2])
+		axes.set_ylim([0,1])
 		plt.show()
 		
 		l=[]
