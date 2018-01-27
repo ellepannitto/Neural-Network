@@ -1,3 +1,9 @@
+Neural-Network ver 0.3.1
+  
+  * implemented CrossValidation.
+
+-- Lucio Messina <luciomessina94@gmail.com> Sat, 27 Jan 2018 21:33
+
 Neural-Network ver 0.3
   
   * started implementing CrossValidation.

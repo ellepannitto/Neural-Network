@@ -35,8 +35,8 @@ def random_weigth_initializer ():
 
 SLOPE = -1
 
-ETA = 0.07
-ALPHA = 0.5
+ETA = 0.06
+ALPHA = 0.6
 LAMBDA = 0.001
 
 NUM_TRIALS_PER_CONFIGURATION = 3
