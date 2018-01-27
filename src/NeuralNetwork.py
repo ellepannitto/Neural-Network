@@ -2,8 +2,7 @@ import time
 import collections
 import random
 import numpy as np
-import matplotlib.pyplot as plt
-
+import Plotting
 
 import Params
 import Neuron
@@ -135,6 +134,8 @@ class NeuralNetwork:
 	def set_train (self, train_set, train_labels):
 		self.train_set = train_set
 		self.train_labels = train_labels
+		self.setInputDim (len(train_set[0]))
+		self.setOutputDim (len(train_labels[0]))
 
 	def set_validation (self, validation_set, validation_labels):
 		self.validation_set = validation_set
@@ -315,9 +316,6 @@ if __name__=="__main__":
 		encoded_test_s = OneHotEncoder.encode_int_matrix (test_s)
 		
 		myNN = NeuralNetwork()	
-		myNN.setInputDim (len(encoded_train_s[0]))
-		print ("input dim: {}".format(len(encoded_train_s[0])))
-		myNN.setOutputDim (len(train_l[0]))
 		myNN.addLayer(6)
 		
 		myNN.set_train (encoded_train_s, train_l)
@@ -325,16 +323,7 @@ if __name__=="__main__":
 		
 		myNN.learn()
 		
-		plt.plot(list(range(len(myNN.train_losses))), myNN.train_losses, 'r--', label='train error')
-		plt.plot(list(range(len(myNN.validation_losses))), myNN.validation_losses, 'b-', label='validation error')
-		plt.plot(list(range(len(myNN.validation_accuracies))), myNN.validation_accuracies, 'k-', label='validation Accuracy')
-		plt.legend()
-		plt.ylabel('Loss')
-		plt.xlabel('epoch')
-		axes = plt.gca()
-		axes.set_xlim([0,Params.MAX_EPOCH])
-		axes.set_ylim([0,1])
-		plt.show()
+		Plotting.plot_loss_accuracy_per_epoch (myNN)
 		
 		l=[]
 		for x,y in zip(encoded_train_s, train_l):

@@ -1,10 +1,11 @@
 
+import numpy as np
+
 import Params
 import Monk
-import numpy as np
 import OneHotEncoder
 from NeuralNetwork import NeuralNetwork
-import matplotlib.pyplot as plt
+import Plotting
 
 class EarlyStopping:
 	
@@ -18,7 +19,7 @@ class EarlyStopping:
 		
 		self.layers_size = layers_size
 		
-	#TODO: maybe it can be otpimized :)
+	#TODO: make this more resistant to spikes
 	def find_best_epoch ( self, losses ):
 		WINDOW = 5
 		TOLLERANCE = 0.001
@@ -35,8 +36,6 @@ class EarlyStopping:
 		stats = []
 		for i in range (Params.NUM_TRIALS_PER_CONFIGURATION):
 			myNN = NeuralNetwork()	
-			myNN.setInputDim (len(self.train_set[0]))
-			myNN.setOutputDim (len(self.train_labels[0]))
 			
 			for size in self.layers_size:
 				myNN.addLayer(size)
@@ -53,17 +52,9 @@ class EarlyStopping:
 			print ("trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
 			
 			if do_plots:
-				plt.plot(list(range(len(myNN.train_losses))), myNN.train_losses, 'r--', label='train error')
-				plt.plot(list(range(len(myNN.validation_losses))), myNN.validation_losses, 'b-', label='validation error')
-				plt.plot(list(range(len(myNN.validation_accuracies))), myNN.validation_accuracies, 'k-', label='validation Accuracy')
-				plt.plot([when_to_stop,when_to_stop], [0,1],'g')
-				plt.legend()
-				plt.ylabel('Loss')
-				plt.xlabel('epoch')
-				axes = plt.gca()
-				axes.set_xlim([0,Params.MAX_EPOCH])
-				axes.set_ylim([0,1])
-				plt.show()
+				Plotting.plot_loss_accuracy_per_epoch (myNN, show=False)
+				Plotting.plot_vertical_line ( when_to_stop )
+				Plotting.show_plot()
 			
 			stats.append ((when_to_stop, accuracy_per_epoch[when_to_stop]))
 		

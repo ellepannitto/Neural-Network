@@ -1,3 +1,11 @@
+Neural-Network ver 0.3
+  
+  * started implementing CrossValidation.
+  * added a module Plotting, to generate plots.
+  * refactored a bit the NeuralNetwork code to elimiate redundancy.
+
+-- Lucio Messina <luciomessina94@gmail.com> Sat, 27 Jan 2018 17:51
+
 Neural-Network ver 0.2.3
   
   * Tested and improved EarlyStopping.
