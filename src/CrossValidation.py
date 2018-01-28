@@ -4,6 +4,10 @@ import copy
 import EarlyStopping
 import Monk
 import OneHotEncoder
+import Params
+
+from sklearn.neural_network import MLPClassifier
+
 
 class KFoldCrossValidation:
 	
@@ -37,15 +41,38 @@ class KFoldCrossValidation:
 			train_s = self.dataset[0 : validation_len*i] + self.dataset[validation_len*(i+1) : ]
 			train_l = self.labels[0 : validation_len*i] + self.labels[validation_len*(i+1) : ]
 			
-			#~ es = EarlyStopping.EarlyStopping ( train_s+validation_s, train_l+validation_l, validation_s, validation_l, layers_size=(2,) )
-			es = EarlyStopping.EarlyStopping ( train_s, train_l, validation_s, validation_l, layers_size=(2,) )
-				
+			es = EarlyStopping.EarlyStopping ( train_s, train_l, validation_s, validation_l, layers_size=(6,) )
+			
 			print ("Fold {}/{}".format(i+1,self.K))
 			#~ print ("Train sample: {}".format(len(train_s)))
 			#~ print ("Valid sample: {}".format(len(validation_s)))
 			
 			es.perform ( do_plots=do_plots )
 		
+			#~ train_l = [ el[0] for el in train_l ]
+			#~ validation_l = [ el[0] for el in validation_l ]
+			
+			#~ print ("SKLEARN")
+			#~ clf = MLPClassifier(activation='logistic', solver='lbfgs', learning_rate_init=Params.ETA,
+		                    #~ momentum=Params.ALPHA, alpha=Params.LAMBDA, hidden_layer_sizes=(6,), early_stopping=True)
+			#~ clf.fit (train_s, train_l)
+		
+			#~ l=[]
+			#~ predicted_train_l = clf.predict (train_s)
+			#~ for o,y in zip(predicted_train_l, train_l):
+				#~ l.append(1 if ((o>0.5 and y>0.5) or (o<=0.5 and y<=0.5)) else 0)
+				
+			#~ print ("Accuracy on train set {}".format ( (sum(l)*1.0/len(l))) )
+
+			#~ l=[]
+			#~ predicted_validation_l = clf.predict (validation_s)
+			#~ for o,y in zip(predicted_validation_l, validation_l):
+				#~ l.append(1 if ((o>0.5 and y>0.5) or (o<=0.5 and y<=0.5)) else 0)
+				
+			#~ print ("Accuracy on validation set {}".format ( (sum(l)*1.0/len(l))) )
+
+				
+			
 
 
 if __name__=="__main__":
@@ -61,5 +88,5 @@ if __name__=="__main__":
 	print ("Original Train samples: {}".format(len(encoded_train_s)))
 	print ("Original test  samples: {}".format(len(encoded_test_s)))
 	
-	kfcv = KFoldCrossValidation ( encoded_train_s, train_l, K=10, model_name="MONK 3", shuffle=False )
+	kfcv = KFoldCrossValidation ( encoded_train_s, train_l, K=10, model_name="MONK 3", shuffle=True )
 	kfcv.perform( do_plots=True )

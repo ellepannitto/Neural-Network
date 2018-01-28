@@ -89,4 +89,4 @@ ENV/
 .ropeproject
 
 # Folders
-dataset
+datasets

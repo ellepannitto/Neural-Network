@@ -19,12 +19,17 @@ class EarlyStopping:
 		
 	#TODO: make this more resistant to spikes
 	def find_best_epoch ( self, losses ):
-		WINDOW = 5
-		TOLLERANCE = 0.001
-		for i in range (WINDOW, Params.MAX_EPOCH):
-			if all ([ losses[j] < losses[i] for j in range(i-WINDOW, i) ] ) or losses[i-WINDOW]<losses[i]+TOLLERANCE:
-				return np.argmin (losses[:i-WINDOW+1])
+		MAX_WINDOW = 50
+		MIN_WINDOW = 5
+		MAX_TOLLERANCE = 0.05
+		for i in range (MAX_WINDOW, Params.MAX_EPOCH):
+			tollerance = MAX_TOLLERANCE * ( 1- i / Params.MAX_EPOCH )
+			window = int ( (MAX_WINDOW - MIN_WINDOW)*(1-i/Params.MAX_EPOCH) + MIN_WINDOW )
+			if all ([ losses[j]+tollerance < losses[i] for j in range(i-window, i) ] ) :
+				print ("[DEBUG] arg min :{}".format(i-window+1))
+				return np.argmin (losses[:i-window+1])
 		
+		print ("[DEBUG] argmin of all the epochs") 
 		return np.argmin (losses)
 		
 	def perform (self, do_plots = False):
@@ -45,7 +50,7 @@ class EarlyStopping:
 			loss_per_epoch = myNN.validation_losses
 			
 			when_to_stop = self.find_best_epoch ( loss_per_epoch )
-			#~ print ("trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
+			print ("trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
 			
 			if do_plots:
 				Plotting.plot_loss_accuracy_per_epoch (myNN, show=False)
@@ -66,12 +71,6 @@ if __name__ == "__main__":
 	train_l = Monk.monk3_training_labels
 	test_s  = Monk.monk3_test_set
 	test_l  = Monk.monk3_test_labels
-	
-	encoded_train_s = OneHotEncoder.encode_int_matrix (train_s)
-	encoded_test_s = OneHotEncoder.encode_int_matrix (test_s)
-	
-	print ("Original Train samples: {}".format(len(encoded_train_s)))
-	print ("Original test  samples: {}".format(len(encoded_test_s)))
-	
-	es = EarlyStopping (encoded_train_s, train_l, encoded_test_s, test_l, layers_size=(2,))
+		
+	es = EarlyStopping (train_s, train_l, test_s, test_l, layers_size=(2,))
 	es.perform (do_plots=True)

@@ -1,5 +1,4 @@
-import time
-import collections
+
 import random
 import numpy as np
 import Plotting
@@ -7,7 +6,10 @@ import Plotting
 import Params
 import Neuron
 import Statistics
-import Monk
+
+#~ import Monk
+#~ import HAR
+import Iris
 
 class NeuralNetwork:
 	
@@ -52,10 +54,12 @@ class NeuralNetwork:
 	def setInputDim (self, n):
 		
 		self.inputDim = n
+		print ("[NeuralNetwork] input dim: {}".format(self.inputDim))
 	
 	def setOutputDim(self, n):		
 	
 		self.outputDim = n
+		print ("[NeuralNetwork] output dim: {}".format(self.outputDim))
 		
 	def addLayer (self, n):
 		self.layersDim.append(n)
@@ -154,12 +158,12 @@ class NeuralNetwork:
 		ytrain = self.train_labels
 		
 		while (epoch < Params.MAX_EPOCH):
-					
+			
+			print ("epoch {}".format(epoch))		
 			loss = Statistics.MSELoss()
 			self.normalization_factor = self.sum_weights()
 			
 			for x,y in zip (xtrain, ytrain):
-				#~ print ("feeding network with example {}".format(x))
 				self.fire_network(x)
 				self.update_backpropagation(y)
 				loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
@@ -175,17 +179,23 @@ class NeuralNetwork:
 			#~ input()
 			
 			self.train_losses.append(loss.loss/len(xtrain))
+			print ("train loss: {}".format(loss.loss/len(xtrain)))
+			
 			
 			if self.validation_set is not None:
 				loss = Statistics.MSELoss()
-				accuracy = Statistics.Accuracy ()
+				accuracy = Statistics.MulticlassificationAccuracy ()
+				#~ accuracy = Statistics.Accuracy ()
 				for x,y in zip (self.validation_set, self.validation_labels):
 					self.fire_network(x)
 					loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
 					accuracy.update ([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
 				self.validation_losses.append (loss.loss/len(self.validation_set))
 				self.validation_accuracies.append (accuracy.get())
-			
+				
+				print ("validation loss: {}".format(loss.loss/len(self.validation_set)))
+				print ("validation accuracy: {}".format(accuracy.get()))
+				
 			epoch += 1
 			
 			
@@ -243,9 +253,9 @@ class NeuralNetwork:
 	
 	def predict (self, instance):
 		
-		self.fire_network(instance)		
-		return [n.getValue() for n in self.lista_neuroni[-1]]	
-	
+		self.fire_network(instance)
+		return [n.getValue() for n in self.lista_neuroni[-1]]
+		
 	def dump (self):
 		print("*** INPUT LAYER ***")
 		for i in range (len(self.lista_neuroni[0])):
@@ -280,8 +290,6 @@ class NeuralNetwork:
 			print("output: ",self.lista_neuroni[-1][i].getValue())
 			print()
 	
-import OneHotEncoder
-
 if __name__=="__main__":
 	
 	
@@ -292,10 +300,10 @@ if __name__=="__main__":
 	#~ test_labels  = [ Monk.monk1_test_labels, Monk.monk2_test_labels, Monk.monk3_test_labels ]
 	
 	#only one MONK
-	train_sets   = [ Monk.monk3_training_set ]
-	train_labels = [ Monk.monk3_training_labels ]
-	test_sets    = [ Monk.monk3_test_set ]
-	test_labels  = [ Monk.monk3_test_labels ]
+	#~ train_sets   = [ Monk.monk3_training_set ]
+	#~ train_labels = [ Monk.monk3_training_labels ]
+	#~ test_sets    = [ Monk.monk3_test_set ]
+	#~ test_labels  = [ Monk.monk3_test_labels ]
 	
 	# XOR
 	#~ train_sets = [ [[0, 0], [0,1], [1,0], [1,1]] ]
@@ -303,37 +311,44 @@ if __name__=="__main__":
 	#~ test_sets = [ [[1,1] ] ]
 	#~ test_labels = [ [[0] ] ]
 	
+	# HAR
+	#~ train_sets = [ HAR.HAR_train_set ] 
+	#~ train_labels = [ HAR.HAR_train_labels ] 
+	#~ test_sets = [ HAR.HAR_test_set ] 
+	#~ test_labels = [ HAR.HAR_test_labels ] 
+	
+	# Iris
+	train_sets = [ Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] ] 
+	train_labels = [ Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):] ] 
+	test_sets = [ Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] ] 
+	test_labels = [ Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] ] 
+
+	
 	for i, train_s, train_l, test_s, test_l in zip ( range(1,len(train_sets)+1), train_sets, train_labels, test_sets, test_labels ):
 		
-		#~ print ("--- TEST {} ---".format(i))
-		print ("--- MONK {} ---".format(i))
+		print ("--- TEST {} ---".format(i))
 		
-		#~ enc = OneHotEncoder (sparse=False)
-		#~ encoded_train_s = enc.fit_transform (train_s)
-		#~ encoded_test_s = enc.fit_transform (test_s)
-		
-		encoded_train_s = OneHotEncoder.encode_int_matrix (train_s)
-		encoded_test_s = OneHotEncoder.encode_int_matrix (test_s)
-		
-		myNN = NeuralNetwork()	
+		myNN = NeuralNetwork()
 		myNN.addLayer(6)
 		
-		myNN.set_train (encoded_train_s, train_l)
-		myNN.set_validation (encoded_test_s, test_l)
+		myNN.set_train (train_s, train_l)
+		myNN.set_validation (test_s, test_l)
 		
 		myNN.learn()
 		
 		Plotting.plot_loss_accuracy_per_epoch (myNN)
 		
-		l=[]
-		for x,y in zip(encoded_train_s, train_l):
-			l.append(1 if ((myNN.predict(x)[0]>0.5 and y[0]>0.5) or (myNN.predict(x)[0]<=0.5 and y[0]<=0.5)) else 0)
+		a = Statistics.MulticlassificationAccuracy ()
+		for x,y in zip(train_s, train_l):
+			o = myNN.predict (x)
+			a.update (o, y)
 			
-		print ("Accuracy on train set {}".format ( (sum(l)*1.0/len(l))) )
+		print ("Accuracy on train set {}".format ( a.get() ))
 
-		l=[]
-		for x,y in zip(encoded_test_s, test_l):
-			l.append(1 if ((myNN.predict(x)[0]>0.5 and y[0]>0.5) or (myNN.predict(x)[0]<=0.5 and y[0]<=0.5)) else 0)
+		a = Statistics.MulticlassificationAccuracy ()
+		for x,y in zip(test_s, test_l):
+			o = myNN.predict (x)
+			a.update (o, y)
 			
-		print ("Accuracy on test set {}".format ( (sum(l)*1.0/len(l))) )
+		print ("Accuracy on test set {}".format ( a.get() ))
 

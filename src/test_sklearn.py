@@ -1,40 +1,52 @@
 
-import Monk
+#~ import Monk
+import Iris
 import Params
 from sklearn.neural_network import MLPClassifier
-from sklearn.preprocessing import OneHotEncoder
+#~ import HAR
+import Statistics
 
 if __name__ == "__main__":
 	
 	#only one MONK
-	train_sets   = [ Monk.monk3_training_set ]
-	train_labels = [ [ y[0] for y in Monk.monk3_training_labels ] ]
-	test_sets    = [ Monk.monk3_test_set ]
-	test_labels  = [ [ y[0] for y in Monk.monk3_test_labels ] ]
-		
+	#~ train_sets   = [ Monk.monk3_training_set ]
+	#~ train_labels = [ [ y[0] for y in Monk.monk3_training_labels ] ]
+	#~ test_sets    = [ Monk.monk3_test_set ]
+	#~ test_labels  = [ [ y[0] for y in Monk.monk3_test_labels ] ]
+	
+	# HAR
+	#~ train_sets = [ HAR.HAR_train_set ] 
+	#~ train_labels = [ HAR.HAR_train_labels ] 
+	#~ test_sets = [ HAR.HAR_test_set ] 
+	#~ test_labels = [ HAR.HAR_test_labels ] 
+	
+	# Iris
+	train_sets = [ Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] ] 
+	train_labels = [ Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):] ] 
+	test_sets = [ Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] ] 
+	test_labels = [ Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] ] 
+	
 	for i, train_s, train_l, test_s, test_l in zip ( range(1,len(train_sets)+1), train_sets, train_labels, test_sets, test_labels ):
 		
-		print ("--- MONK {} ---".format(i))
+		print ("--- TEST {} ---".format(i))
 		
-		enc = OneHotEncoder (sparse=False)
-		encoded_train_s = enc.fit_transform (train_s)
-		encoded_test_s = enc.fit_transform (test_s)
 		
 		clf = MLPClassifier(activation='logistic', solver='lbfgs', learning_rate_init=Params.ETA,
 		                    momentum=Params.ALPHA, alpha=Params.LAMBDA, hidden_layer_sizes=(6,))
 
-		clf.fit (encoded_train_s, train_l)
+		clf.fit (train_s, train_l)
 		
-		l=[]
-		predicted_train_l = clf.predict (encoded_train_s)
+		predicted_train_l = clf.predict (train_s)
+		a = Statistics.MulticlassificationAccuracy ()
 		for o,y in zip(predicted_train_l, train_l):
-			l.append(1 if ((o>0.5 and y>0.5) or (o<=0.5 and y<=0.5)) else 0)
+			a.update (o, y)
 			
-		print ("Accuracy on train set {}".format ( (sum(l)*1.0/len(l))) )
+		print ("Accuracy on train set {}".format ( a.get() ))
 
-		l=[]
-		predicted_test_l = clf.predict (encoded_test_s)
+		a = Statistics.MulticlassificationAccuracy ()
+		predicted_test_l = clf.predict (test_s)
 		for o,y in zip(predicted_test_l, test_l):
-			l.append(1 if ((o>0.5 and y>0.5) or (o<=0.5 and y<=0.5)) else 0)
+			a.update (o, y)
 			
-		print ("Accuracy on test set {}".format ( (sum(l)*1.0/len(l))) )
+		print ("Accuracy on test set {}".format ( a.get() ))
+		

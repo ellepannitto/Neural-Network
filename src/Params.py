@@ -2,14 +2,25 @@ import math
 import random
 
 def sigmoid_function (x):
+	try:
 		return 1.0 / (1 + math.exp(x*SLOPE) )
+	except Exception as e: 
+		print ("error in sigmoid function x:{}".format(x))
+		print (e)
+		
+	return 0
 
 def derivative_sigmoid_function (x):
+	try:
 		return -SLOPE*math.exp(SLOPE*x) / ((1 + math.exp(x*SLOPE) )**2)
-
+	except Exception as e:
+		print ("error in derivative sigmoid function x:{}".format(x))
+		print (e)
+	return 0
+		
 ActivationFunctions = {
-	"sigmoid": lambda x: sigmoid_function(x),
-	"sigmoid_der": lambda x: derivative_sigmoid_function(x),
+	"sigmoid": sigmoid_function,
+	"sigmoid_der": derivative_sigmoid_function,
 	"id": lambda x: x,
 	"id_der": lambda x: 1
 }
@@ -35,9 +46,9 @@ def random_weigth_initializer ():
 
 SLOPE = -1
 
-ETA = 0.06
-ALPHA = 0.6
-LAMBDA = 0.001
+ETA = 0.015
+ALPHA = 0.3
+LAMBDA = 0.002
 
 NUM_TRIALS_PER_CONFIGURATION = 3
 MAX_EPOCH = 200
