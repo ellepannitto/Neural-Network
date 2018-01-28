@@ -2,7 +2,7 @@
 import random
 import copy
 import EarlyStopping
-import Monk
+import Iris
 import OneHotEncoder
 import Params
 
@@ -21,7 +21,6 @@ class KFoldCrossValidation:
 			indices = random.sample (range(len(self.dataset)), len(self.dataset))
 			self.dataset = [ self.dataset[i] for i in indices ]
 			self.labels = [ self.labels[i] for i in indices ]
-			
 		
 	def perform (self, do_plots=False):
 		
@@ -36,7 +35,7 @@ class KFoldCrossValidation:
 				validation_l = self.labels[validation_len*i : ]
 			else: 
 				validation_s = self.dataset[validation_len*i : validation_len*(i+1)] 
-				validation_l = self.dataset[validation_len*i : validation_len*(i+1)] 
+				validation_l = self.labels[validation_len*i : validation_len*(i+1)] 
 			
 			train_s = self.dataset[0 : validation_len*i] + self.dataset[validation_len*(i+1) : ]
 			train_l = self.labels[0 : validation_len*i] + self.labels[validation_len*(i+1) : ]
@@ -44,8 +43,8 @@ class KFoldCrossValidation:
 			es = EarlyStopping.EarlyStopping ( train_s, train_l, validation_s, validation_l, layers_size=(6,) )
 			
 			print ("Fold {}/{}".format(i+1,self.K))
-			#~ print ("Train sample: {}".format(len(train_s)))
-			#~ print ("Valid sample: {}".format(len(validation_s)))
+			print ("Train sample: {}".format(len(train_s)))
+			print ("Valid sample: {}".format(len(validation_s)))
 			
 			es.perform ( do_plots=do_plots )
 		
@@ -77,16 +76,11 @@ class KFoldCrossValidation:
 
 if __name__=="__main__":
 	
-	train_s = Monk.monk3_training_set
-	train_l = Monk.monk3_training_labels
-	test_s  = Monk.monk3_test_set
-	test_l  = Monk.monk3_test_labels
+	# Iris
+	train_s = Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] 
+	train_l = Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):]
+	test_s =  Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] 
+	test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
 	
-	encoded_train_s = OneHotEncoder.encode_int_matrix (train_s)
-	encoded_test_s = OneHotEncoder.encode_int_matrix (test_s)
-	
-	print ("Original Train samples: {}".format(len(encoded_train_s)))
-	print ("Original test  samples: {}".format(len(encoded_test_s)))
-	
-	kfcv = KFoldCrossValidation ( encoded_train_s, train_l, K=10, model_name="MONK 3", shuffle=True )
+	kfcv = KFoldCrossValidation ( train_s+test_s, train_l+test_l, K=8, model_name="Iris", shuffle=False )
 	kfcv.perform( do_plots=True )

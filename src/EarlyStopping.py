@@ -2,8 +2,8 @@
 import numpy as np
 
 import Params
-import Monk
-import OneHotEncoder
+#~ import Monk
+import Iris
 from NeuralNetwork import NeuralNetwork
 import Plotting
 
@@ -16,6 +16,19 @@ class EarlyStopping:
 		self.validation_labels = validation_labels
 		
 		self.layers_size = layers_size
+		
+		print ("[DEBUG] in early stopping ")
+		print ("[DEBUG]size of train_s: {}".format(len(self.train_set)))
+		print ("[DEBUG]first 10 elements of train_s: {}".format(self.train_set[:10]))
+		print ("[DEBUG]size of train_l: {}".format(len(self.train_labels)))
+		print ("[DEBUG]first 10 elements of train_l: {}".format(self.train_labels[:10]))
+		print ("[DEBUG]size of valid_s: {}".format(len(self.validation_set)))
+		print ("[DEBUG]first 10 elements of valid_s: {}".format(self.validation_set[:10]))
+		print ("[DEBUG]size of valid_l: {}".format(len(self.validation_labels)))
+		print ("[DEBUG]first 10 elements of valid_l: {}".format(self.validation_labels[:10]))
+		print ("[DEBUG]layers_size: {}".format(self.layers_size))
+		input()
+
 		
 	#TODO: make this more resistant to spikes
 	def find_best_epoch ( self, losses ):
@@ -67,10 +80,11 @@ class EarlyStopping:
 	
 if __name__ == "__main__":
 	
-	train_s = Monk.monk3_training_set
-	train_l = Monk.monk3_training_labels
-	test_s  = Monk.monk3_test_set
-	test_l  = Monk.monk3_test_labels
-		
-	es = EarlyStopping (train_s, train_l, test_s, test_l, layers_size=(2,))
+	# Iris
+	train_s = Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] 
+	train_l = Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):]
+	test_s =  Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] 
+	test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
+	
+	es = EarlyStopping (train_s, train_l, test_s, test_l, layers_size=(6,))
 	es.perform (do_plots=True)

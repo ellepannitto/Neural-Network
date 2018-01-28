@@ -54,12 +54,12 @@ class NeuralNetwork:
 	def setInputDim (self, n):
 		
 		self.inputDim = n
-		print ("[NeuralNetwork] input dim: {}".format(self.inputDim))
+		#~ print ("[NeuralNetwork] input dim: {}".format(self.inputDim))
 	
 	def setOutputDim(self, n):		
 	
 		self.outputDim = n
-		print ("[NeuralNetwork] output dim: {}".format(self.outputDim))
+		#~ print ("[NeuralNetwork] output dim: {}".format(self.outputDim))
 		
 	def addLayer (self, n):
 		self.layersDim.append(n)

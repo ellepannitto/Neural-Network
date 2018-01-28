@@ -1,9 +1,14 @@
+Neural-Network ver 0.3.3
+  
+  * Fixed bug in CrossValidation.
+
+-- Lucio Messina <luciomessina94@gmail.com> Sun, 28 Jan 2018 22:53
+
 Neural-Network ver 0.3.2
   
   * added Iris dataset.
   * improved dataset loading.
-  * Implemented Statistics.MulticlassificationAccuracy for multi-class
-  classification tasks
+  * Implemented Statistics.MulticlassificationAccuracy for multi-class classification tasks
 
 -- Lucio Messina <luciomessina94@gmail.com> Sun, 28 Jan 2018 19:31
 
