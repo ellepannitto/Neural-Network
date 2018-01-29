@@ -1,3 +1,9 @@
+Neural-Network ver 0.4
+  
+  * Implemented minibatch mode.
+
+-- Lucio Messina <luciomessina94@gmail.com> Mon, 29 Jan 2018 19:47
+
 Neural-Network ver 0.3.5
   
   * Implemented ETA-decay.

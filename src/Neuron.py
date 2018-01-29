@@ -14,6 +14,7 @@ class Neuron:
 		
 		self.dw = [0]*weights
 		self.prev_dw = [0]*weights
+		self.cumulative_prev_dw = [0]*weights
 		
 	def compute_net (self):
 		
@@ -68,16 +69,19 @@ class Neuron:
 		for i in range(len(self.weights)):
 			self.dw[i] += self.bp * self.inputs[i]
 			
-	def update_weights(self, sum_w, examples_number=1):
+	def update_weights(self, sum_w, examples_number=1, end_epoch=True):
 		
 		for i in range(len(self.weights)):
 			
 			self.weights[i] -= 2*self.params.LAMBDA * self.weights[i]
 			self.weights[i] += self.params.ETA * self.dw[i] / examples_number
-			self.weights[i] += self.params.ALPHA * self.prev_dw[i] 
 			
-			self.prev_dw[i] = self.params.ETA * self.dw[i] / examples_number + self.params.ALPHA * self.prev_dw[i]
-		
+			self.weights[i] += self.params.ALPHA * self.prev_dw[i]	
+			self.cumulative_prev_dw[i] += self.params.ETA * self.dw[i] / examples_number
+			
+			if end_epoch:
+				self.prev_dw[i] = self.cumulative_prev_dw[i] + self.params.ALPHA * self.prev_dw[i]
+				self.cumulative_prev_dw[i] = 0
 		
 		self.dw = [0]*len(self.dw)
 

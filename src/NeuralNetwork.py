@@ -1,5 +1,6 @@
 
 import random
+import copy
 import numpy as np
 import Plotting
 
@@ -10,6 +11,8 @@ import Statistics
 #~ import Monk
 #~ import HAR
 import Iris
+
+from sklearn.utils import shuffle as parallel_shuffle
 
 class NeuralNetwork:
 	
@@ -138,14 +141,14 @@ class NeuralNetwork:
 		self.lista_neuroni.append(lista)
 	
 	def set_train (self, train_set, train_labels):
-		self.train_set = train_set
-		self.train_labels = train_labels
+		self.train_set = copy.deepcopy (train_set)
+		self.train_labels = copy.deepcopy (train_labels)
 		self.setInputDim (len(train_set[0]))
 		self.setOutputDim (len(train_labels[0]))
 
 	def set_validation (self, validation_set, validation_labels):
-		self.validation_set = validation_set
-		self.validation_labels = validation_labels
+		self.validation_set = copy.deepcopy (validation_set)
+		self.validation_labels = copy.deepcopy (validation_labels)
 	
 	def learn (self):
 	
@@ -159,6 +162,9 @@ class NeuralNetwork:
 		xtrain = self.train_set
 		ytrain = self.train_labels
 		
+		#~ print ("[DEBUG]len(xtrain): {}".format(len(xtrain)))
+		#~ print ("[DEBUG]first 10 elements of xtrain: {}".format(xtrain[:10]))
+		
 		while (epoch < self.params.MAX_EPOCH):
 			
 			if self.params.ETA_DECAY:
@@ -167,21 +173,37 @@ class NeuralNetwork:
 				else:
 					self.params.ETA = self.params.ETA_RANGE[1] - (self.params.ETA_RANGE[1] - self.params.ETA_RANGE[0]) * ( epoch / (self.params.MAX_EPOCH * self.params.ETA_DECREASING_PERIOD) )
 				#~ print ("[DEBUG] epoch {} eta {}".format(epoch, self.params.ETA))
-				
+			
+			if self.params.MINIBATCH:
+				xtrain, ytrain = parallel_shuffle (xtrain, ytrain)
+				#~ print ("[DEBUG]after shuffling xtrain")
+				#~ print ("[DEBUG]first 10 elements of xtrain: {}".format(xtrain[:10]))
+		
+			
 			#~ print ("epoch {}".format(epoch))		
 			loss = Statistics.MSELoss()
 			self.normalization_factor = self.sum_weights()
 			
-			for x,y in zip (xtrain, ytrain):
+			for i,x,y in zip (range(1,len(xtrain)+1), xtrain, ytrain):
 				self.fire_network(x)
 				self.update_backpropagation(y)
 				loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
+				
+				if self.params.MINIBATCH and i%self.params.MINIBATCH_SAMPLE == 0:
+					#~ print ("epoch {} num samples {}: weights updating".format(epoch, i))
+					#~ print ("end epoch: {}".format(i==len(xtrain)))
+					self.update_weights (self.params.MINIBATCH_SAMPLE, end_epoch=(i==len(xtrain)) )
 				
 				#~ print ("after feeding")
 				#~ self.dump()
 				#~ input()
 			
-			self.update_weights( len(xtrain) )
+			if self.params.MINIBATCH:
+				#~ print ("MINIBATCH: updating the weights at the end of the {} epoch, for the remaininng {} patterns".format(epoch, len(xtrain)%self.params.MINIBATCH_SAMPLE ))
+				self.update_weights( len(xtrain)%self.params.MINIBATCH_SAMPLE )
+			else:
+				#~ print ("    BATCH: updating the weights at the end of the {} epoch, for the remaininng {} patterns".format(epoch, len(xtrain)))
+				self.update_weights( len(xtrain) )
 			
 			#~ print ("after weight update")
 			#~ self.dump()
@@ -209,12 +231,12 @@ class NeuralNetwork:
 			
 			
 				
-	def update_weights(self, examples_number):
+	def update_weights(self, examples_number, end_epoch=True):
+		if not examples_number == 0:
+			for l in self.lista_neuroni:
+				for n in l:
+					n.update_weights(self.normalization_factor, examples_number=examples_number,  end_epoch=end_epoch)
 		
-		for l in self.lista_neuroni:
-			for n in l: 
-				n.update_weights(self.normalization_factor, examples_number=1)
-	
 	#TODO: try not considering the biases
 	def sum_weights (self):
 		s=0
@@ -300,7 +322,6 @@ class NeuralNetwork:
 			print()
 	
 if __name__=="__main__":
-	
 	
 	#MONKs
 	#~ train_sets   = [ Monk.monk1_training_set, Monk.monk2_training_set, Monk.monk3_training_set ]

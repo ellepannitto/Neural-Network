@@ -65,4 +65,4 @@ if __name__=="__main__":
 	#~ test_l  = Monk.monk3_test_labels
 			
 	kfcv = KFoldCrossValidation ( train_s, train_l, K=10, model_name="Iris", shuffle=True )
-	kfcv.perform( do_plots=False )
+	kfcv.perform( do_plots=True )

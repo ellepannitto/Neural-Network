@@ -1,6 +1,8 @@
 import math
 import random
 
+random.seed(0)
+
 def sigmoid_function (x):
 	try:
 		return 1.0 / (1 + math.exp(x*SLOPE) )
@@ -46,14 +48,17 @@ def random_weigth_initializer ():
 
 SLOPE = -1
 
-ETA = 0.015
-ALPHA = 0.3
+ETA = 1
+ALPHA = 0.8
 LAMBDA = 0.002
 
 ETA_DECAY=True
-ETA_RANGE=[0.015, 0.02]
+ETA_RANGE=[0.5, 1]
 ETA_DECREASING_PERIOD=3/4
 
 NUM_TRIALS_PER_CONFIGURATION = 3
 MAX_EPOCH = 200
 
+MINIBATCH=True
+#set MINIBATCH_SAMPLE=1 for online version
+MINIBATCH_SAMPLE=35
