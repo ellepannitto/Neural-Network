@@ -5,9 +5,8 @@ import EarlyStopping
 import OneHotEncoder
 
 import Iris
-import HAR
-
-from sklearn.neural_network import MLPClassifier
+import Monk
+#~ import HAR
 
 
 class KFoldCrossValidation:
@@ -59,11 +58,11 @@ if __name__=="__main__":
 	test_s =  Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] 
 	test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
 	
-	#HAR
-	#~ train_s = HAR.HAR_train_set
-	#~ train_l = HAR.HAR_train_labels 
-	#~ test_s = HAR.HAR_test_set
-	#~ test_l = HAR.HAR_test_labels
-		
-	kfcv = KFoldCrossValidation ( train_s, train_l, K=4, model_name="Iris", shuffle=True )
+	# Monk 3
+	#~ train_s = Monk.monk3_training_set
+	#~ train_l = Monk.monk3_training_labels
+	#~ test_s  = Monk.monk3_test_set
+	#~ test_l  = Monk.monk3_test_labels
+			
+	kfcv = KFoldCrossValidation ( train_s, train_l, K=10, model_name="Iris", shuffle=True )
 	kfcv.perform( do_plots=False )

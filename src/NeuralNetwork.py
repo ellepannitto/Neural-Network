@@ -67,7 +67,7 @@ class NeuralNetwork:
 		self.layersDim.append(n)
 		
 	def addBias(self, lista):
-		bias = Neuron.Neuron()
+		bias = Neuron.Neuron( self.params )
 		bias.initialize ("id", 1, Params.unit_weigth_initializer )
 		lista.append( bias )
 		
@@ -122,19 +122,19 @@ class NeuralNetwork:
 		
 		lista = []
 		for i in range(self.inputDim):
-			lista.append(Neuron.Neuron())
+			lista.append(Neuron.Neuron(self.params))
 		
 		self.lista_neuroni.append(lista)
 		
 		for dim in self.layersDim:
 			lista = []
 			for i in range(dim):
-				lista.append(Neuron.Neuron())
+				lista.append(Neuron.Neuron(self.params))
 			self.lista_neuroni.append(lista)
 			
 		lista = []	
 		for i in range(self.outputDim):
-			lista.append(Neuron.Neuron())
+			lista.append(Neuron.Neuron(self.params))
 		self.lista_neuroni.append(lista)
 	
 	def set_train (self, train_set, train_labels):
@@ -161,6 +161,13 @@ class NeuralNetwork:
 		
 		while (epoch < self.params.MAX_EPOCH):
 			
+			if self.params.ETA_DECAY:
+				if epoch>=self.params.ETA_DECREASING_PERIOD * self.params.MAX_EPOCH:
+					self.params.ETA = self.params.ETA_RANGE[0]
+				else:
+					self.params.ETA = self.params.ETA_RANGE[1] - (self.params.ETA_RANGE[1] - self.params.ETA_RANGE[0]) * ( epoch / (self.params.MAX_EPOCH * self.params.ETA_DECREASING_PERIOD) )
+				#~ print ("[DEBUG] epoch {} eta {}".format(epoch, self.params.ETA))
+				
 			#~ print ("epoch {}".format(epoch))		
 			loss = Statistics.MSELoss()
 			self.normalization_factor = self.sum_weights()
@@ -341,6 +348,7 @@ if __name__=="__main__":
 		Plotting.plot_loss_accuracy_per_epoch (myNN)
 		
 		a = Statistics.MulticlassificationAccuracy ()
+		#~ a = Statistics.Accuracy ()
 		for x,y in zip(train_s, train_l):
 			o = myNN.predict (x)
 			a.update (o, y)
@@ -348,6 +356,7 @@ if __name__=="__main__":
 		print ("Accuracy on train set {}".format ( a.get() ))
 
 		a = Statistics.MulticlassificationAccuracy ()
+		#~ a = Statistics.Accuracy ()
 		for x,y in zip(test_s, test_l):
 			o = myNN.predict (x)
 			a.update (o, y)
