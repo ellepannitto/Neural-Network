@@ -73,13 +73,13 @@ class Neuron:
 		
 		for i in range(len(self.weights)):
 			
-			self.weights[i] -= 2*self.params.LAMBDA * self.weights[i]
 			self.weights[i] += self.params.ETA * self.dw[i] / examples_number
 			
 			self.weights[i] += self.params.ALPHA * self.prev_dw[i]	
 			self.cumulative_prev_dw[i] += self.params.ETA * self.dw[i] / examples_number
 			
 			if end_epoch:
+				self.weights[i] -= 2*self.params.LAMBDA * self.weights[i]
 				self.prev_dw[i] = self.cumulative_prev_dw[i] + self.params.ALPHA * self.prev_dw[i]
 				self.cumulative_prev_dw[i] = 0
 		

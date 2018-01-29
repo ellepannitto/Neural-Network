@@ -1,3 +1,9 @@
+Neural-Network ver 0.4.1
+  
+  * Improved Neuron such that the weights regularization is done only once per epoch: there is no more need to use different LAMBDAs for batch and minibatch task.
+
+-- Lucio Messina <luciomessina94@gmail.com> Mon, 29 Jan 2018 20:04
+
 Neural-Network ver 0.4
   
   * Implemented minibatch mode.
