@@ -13,7 +13,7 @@ import Iris
 
 class NeuralNetwork:
 	
-	def __init__(self):
+	def __init__(self, params=Params):
 		self.lista_neuroni = []
 		
 		self.archi_entranti = []
@@ -28,6 +28,8 @@ class NeuralNetwork:
 		self.normalization_factor = 0
 		
 		self.validation_set = None
+		
+		self.params = params
 		
 	def fire_network (self, instance):
 		
@@ -157,9 +159,9 @@ class NeuralNetwork:
 		xtrain = self.train_set
 		ytrain = self.train_labels
 		
-		while (epoch < Params.MAX_EPOCH):
+		while (epoch < self.params.MAX_EPOCH):
 			
-			print ("epoch {}".format(epoch))		
+			#~ print ("epoch {}".format(epoch))		
 			loss = Statistics.MSELoss()
 			self.normalization_factor = self.sum_weights()
 			
@@ -179,7 +181,7 @@ class NeuralNetwork:
 			#~ input()
 			
 			self.train_losses.append(loss.loss/len(xtrain))
-			print ("train loss: {}".format(loss.loss/len(xtrain)))
+			#~ print ("train loss: {}".format(loss.loss/len(xtrain)))
 			
 			
 			if self.validation_set is not None:
@@ -193,8 +195,8 @@ class NeuralNetwork:
 				self.validation_losses.append (loss.loss/len(self.validation_set))
 				self.validation_accuracies.append (accuracy.get())
 				
-				print ("validation loss: {}".format(loss.loss/len(self.validation_set)))
-				print ("validation accuracy: {}".format(accuracy.get()))
+				#~ print ("validation loss: {}".format(loss.loss/len(self.validation_set)))
+				#~ print ("validation accuracy: {}".format(accuracy.get()))
 				
 			epoch += 1
 			

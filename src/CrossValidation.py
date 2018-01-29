@@ -2,9 +2,10 @@
 import random
 import copy
 import EarlyStopping
-import Iris
 import OneHotEncoder
-import Params
+
+import Iris
+import HAR
 
 from sklearn.neural_network import MLPClassifier
 
@@ -43,35 +44,11 @@ class KFoldCrossValidation:
 			es = EarlyStopping.EarlyStopping ( train_s, train_l, validation_s, validation_l, layers_size=(6,) )
 			
 			print ("Fold {}/{}".format(i+1,self.K))
-			print ("Train sample: {}".format(len(train_s)))
-			print ("Valid sample: {}".format(len(validation_s)))
+			#~ print ("Train sample: {}".format(len(train_s)))
+			#~ print ("Valid sample: {}".format(len(validation_s)))
 			
 			es.perform ( do_plots=do_plots )
-		
-			#~ train_l = [ el[0] for el in train_l ]
-			#~ validation_l = [ el[0] for el in validation_l ]
-			
-			#~ print ("SKLEARN")
-			#~ clf = MLPClassifier(activation='logistic', solver='lbfgs', learning_rate_init=Params.ETA,
-		                    #~ momentum=Params.ALPHA, alpha=Params.LAMBDA, hidden_layer_sizes=(6,), early_stopping=True)
-			#~ clf.fit (train_s, train_l)
-		
-			#~ l=[]
-			#~ predicted_train_l = clf.predict (train_s)
-			#~ for o,y in zip(predicted_train_l, train_l):
-				#~ l.append(1 if ((o>0.5 and y>0.5) or (o<=0.5 and y<=0.5)) else 0)
-				
-			#~ print ("Accuracy on train set {}".format ( (sum(l)*1.0/len(l))) )
-
-			#~ l=[]
-			#~ predicted_validation_l = clf.predict (validation_s)
-			#~ for o,y in zip(predicted_validation_l, validation_l):
-				#~ l.append(1 if ((o>0.5 and y>0.5) or (o<=0.5 and y<=0.5)) else 0)
-				
-			#~ print ("Accuracy on validation set {}".format ( (sum(l)*1.0/len(l))) )
-
-				
-			
+					
 
 
 if __name__=="__main__":
@@ -82,5 +59,11 @@ if __name__=="__main__":
 	test_s =  Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] 
 	test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
 	
-	kfcv = KFoldCrossValidation ( train_s+test_s, train_l+test_l, K=8, model_name="Iris", shuffle=False )
-	kfcv.perform( do_plots=True )
+	#HAR
+	#~ train_s = HAR.HAR_train_set
+	#~ train_l = HAR.HAR_train_labels 
+	#~ test_s = HAR.HAR_test_set
+	#~ test_l = HAR.HAR_test_labels
+		
+	kfcv = KFoldCrossValidation ( train_s, train_l, K=4, model_name="Iris", shuffle=True )
+	kfcv.perform( do_plots=False )

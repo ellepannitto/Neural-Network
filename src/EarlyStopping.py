@@ -17,17 +17,17 @@ class EarlyStopping:
 		
 		self.layers_size = layers_size
 		
-		print ("[DEBUG] in early stopping ")
-		print ("[DEBUG]size of train_s: {}".format(len(self.train_set)))
-		print ("[DEBUG]first 10 elements of train_s: {}".format(self.train_set[:10]))
-		print ("[DEBUG]size of train_l: {}".format(len(self.train_labels)))
-		print ("[DEBUG]first 10 elements of train_l: {}".format(self.train_labels[:10]))
-		print ("[DEBUG]size of valid_s: {}".format(len(self.validation_set)))
-		print ("[DEBUG]first 10 elements of valid_s: {}".format(self.validation_set[:10]))
-		print ("[DEBUG]size of valid_l: {}".format(len(self.validation_labels)))
-		print ("[DEBUG]first 10 elements of valid_l: {}".format(self.validation_labels[:10]))
-		print ("[DEBUG]layers_size: {}".format(self.layers_size))
-		input()
+		#~ print ("[DEBUG] in early stopping ")
+		#~ print ("[DEBUG]size of train_s: {}".format(len(self.train_set)))
+		#~ print ("[DEBUG]first 10 elements of train_s: {}".format(self.train_set[:10]))
+		#~ print ("[DEBUG]size of train_l: {}".format(len(self.train_labels)))
+		#~ print ("[DEBUG]first 10 elements of train_l: {}".format(self.train_labels[:10]))
+		#~ print ("[DEBUG]size of valid_s: {}".format(len(self.validation_set)))
+		#~ print ("[DEBUG]first 10 elements of valid_s: {}".format(self.validation_set[:10]))
+		#~ print ("[DEBUG]size of valid_l: {}".format(len(self.validation_labels)))
+		#~ print ("[DEBUG]first 10 elements of valid_l: {}".format(self.validation_labels[:10]))
+		#~ print ("[DEBUG]layers_size: {}".format(self.layers_size))
+		#~ input()
 
 		
 	#TODO: make this more resistant to spikes
@@ -35,14 +35,14 @@ class EarlyStopping:
 		MAX_WINDOW = 50
 		MIN_WINDOW = 5
 		MAX_TOLLERANCE = 0.05
-		for i in range (MAX_WINDOW, Params.MAX_EPOCH):
-			tollerance = MAX_TOLLERANCE * ( 1- i / Params.MAX_EPOCH )
-			window = int ( (MAX_WINDOW - MIN_WINDOW)*(1-i/Params.MAX_EPOCH) + MIN_WINDOW )
+		for i in range (MAX_WINDOW, len(losses)):
+			tollerance = MAX_TOLLERANCE * ( 1- i / len(losses) )
+			window = int ( (MAX_WINDOW - MIN_WINDOW)*(1-i/len(losses)) + MIN_WINDOW )
 			if all ([ losses[j]+tollerance < losses[i] for j in range(i-window, i) ] ) :
 				print ("[DEBUG] arg min :{}".format(i-window+1))
 				return np.argmin (losses[:i-window+1])
 		
-		print ("[DEBUG] argmin of all the epochs") 
+		#~ print ("[DEBUG] argmin of all the epochs") 
 		return np.argmin (losses)
 		
 	def perform (self, do_plots = False):
@@ -63,7 +63,7 @@ class EarlyStopping:
 			loss_per_epoch = myNN.validation_losses
 			
 			when_to_stop = self.find_best_epoch ( loss_per_epoch )
-			print ("trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
+			#~ print ("trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
 			
 			if do_plots:
 				Plotting.plot_loss_accuracy_per_epoch (myNN, show=False)

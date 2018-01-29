@@ -3,8 +3,8 @@ import math
 import Params
 
 class Neuron:
-	def __init__(self):
-		pass
+	def __init__(self, params=Params):
+		self.params = params
 		
 	def initialize (self, fun_name, weights, weights_inizialization):
 		self.activation_function = Params.ActivationFunctions[fun_name]
@@ -72,13 +72,11 @@ class Neuron:
 		
 		for i in range(len(self.weights)):
 			
-			self.weights[i] -= 2*Params.LAMBDA * self.weights[i]
-			#~ self.weights[i] -= Params.ETA * self.dw[i] / examples_number
-			#~ self.weights[i] -= Params.ALPHA * self.prev_dw[i] 
-			self.weights[i] += Params.ETA * self.dw[i] / examples_number
-			self.weights[i] += Params.ALPHA * self.prev_dw[i] 
+			self.weights[i] -= 2*self.params.LAMBDA * self.weights[i]
+			self.weights[i] += self.params.ETA * self.dw[i] / examples_number
+			self.weights[i] += self.params.ALPHA * self.prev_dw[i] 
 			
-			self.prev_dw[i] = Params.ETA * self.dw[i] / examples_number + Params.ALPHA * self.prev_dw[i]
+			self.prev_dw[i] = self.params.ETA * self.dw[i] / examples_number + self.params.ALPHA * self.prev_dw[i]
 		
 		
 		self.dw = [0]*len(self.dw)
