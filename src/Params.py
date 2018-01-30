@@ -1,7 +1,7 @@
 import math
 import random
 
-random.seed(0)
+#~ random.seed(0)
 
 def sigmoid_function (x):
 	try:
@@ -60,5 +60,16 @@ MINIBATCH=True
 #set MINIBATCH_SAMPLE=1 for online version
 MINIBATCH_SAMPLE=35
 
+LAYERS_SIZE=(6,)
+
 NUM_TRIALS_PER_CONFIGURATION = 3
 MAX_EPOCH = 200
+
+class ConfigurableParams:
+	def __init__ ( self, params_dict ):
+		self.params_dict = params_dict
+	
+	def __getattr__ ( self, attr ):
+		return self.params_dict[attr]
+		
+	

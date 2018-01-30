@@ -215,8 +215,8 @@ class NeuralNetwork:
 			
 			if self.validation_set is not None:
 				loss = Statistics.MSELoss()
-				accuracy = Statistics.MulticlassificationAccuracy ()
-				#~ accuracy = Statistics.Accuracy ()
+				#~ accuracy = Statistics.MulticlassificationAccuracy ()
+				accuracy = Statistics.Accuracy ()
 				for x,y in zip (self.validation_set, self.validation_labels):
 					self.fire_network(x)
 					loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)

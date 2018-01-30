@@ -1,3 +1,9 @@
+Neural-Network ver 0.5
+  
+  * Implemented RandomSearch on a parameter grid.
+
+-- Lucio Messina <luciomessina94@gmail.com> Tue, 30 Jan 2018 13:05
+
 Neural-Network ver 0.4.1
   
   * Improved Neuron such that the weights regularization is done only once per epoch: there is no more need to use different LAMBDAs for batch and minibatch task.

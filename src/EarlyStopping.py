@@ -9,25 +9,14 @@ import Plotting
 
 class EarlyStopping:
 	
-	def __init__ (self, train_set, train_labels, validation_set, validation_labels, layers_size=(5,2)):
+	def __init__ (self, train_set, train_labels, validation_set, validation_labels, layers_size=(5,2), params=Params):
 		self.train_set = train_set
 		self.train_labels = train_labels
 		self.validation_set = validation_set
 		self.validation_labels = validation_labels
 		
 		self.layers_size = layers_size
-		
-		#~ print ("[DEBUG] in early stopping ")
-		#~ print ("[DEBUG]size of train_s: {}".format(len(self.train_set)))
-		#~ print ("[DEBUG]first 10 elements of train_s: {}".format(self.train_set[:10]))
-		#~ print ("[DEBUG]size of train_l: {}".format(len(self.train_labels)))
-		#~ print ("[DEBUG]first 10 elements of train_l: {}".format(self.train_labels[:10]))
-		#~ print ("[DEBUG]size of valid_s: {}".format(len(self.validation_set)))
-		#~ print ("[DEBUG]first 10 elements of valid_s: {}".format(self.validation_set[:10]))
-		#~ print ("[DEBUG]size of valid_l: {}".format(len(self.validation_labels)))
-		#~ print ("[DEBUG]first 10 elements of valid_l: {}".format(self.validation_labels[:10]))
-		#~ print ("[DEBUG]layers_size: {}".format(self.layers_size))
-		#~ input()
+		self.params = params
 
 		
 	#TODO: make this more resistant to spikes
@@ -49,7 +38,7 @@ class EarlyStopping:
 		
 		stats = []
 		for i in range (Params.NUM_TRIALS_PER_CONFIGURATION):
-			myNN = NeuralNetwork()	
+			myNN = NeuralNetwork( self.params )
 			
 			for size in self.layers_size:
 				myNN.addLayer(size)
@@ -76,7 +65,7 @@ class EarlyStopping:
 		self.var_epochs = np.std([e[0] for e in stats])
 		self.mean_accuracy = np.average([e[1] for e in stats])
 		self.var_accuracy = np.std([e[1] for e in stats])
-		print ("mean: epochs {:.0f} +/- {:.4f} accuracy {:.4f} +/- {:.4f}".format( self.mean_epochs, self.var_epochs, self.mean_accuracy, self.var_accuracy) ) 
+		#~ print ("mean: epochs {:.0f} +/- {:.4f} accuracy {:.4f} +/- {:.4f}".format( self.mean_epochs, self.var_epochs, self.mean_accuracy, self.var_accuracy) ) 
 	
 if __name__ == "__main__":
 	

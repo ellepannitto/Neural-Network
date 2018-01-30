@@ -4,7 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 
 import random
 
-random.seed(0)
+#~ random.seed(0)
 
 fin = open ("../datasets/iris_data.txt")
 lines =[ line.split(',') for line in fin.readlines() ]
