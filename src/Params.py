@@ -7,7 +7,7 @@ def sigmoid_function (x):
 	try:
 		return 1.0 / (1 + math.exp(x*SLOPE) )
 	except Exception as e: 
-		print ("error in sigmoid function x:{}".format(x))
+		print ("[ERROR] in sigmoid function x:{}".format(x))
 		print (e)
 		
 	return 0
@@ -16,7 +16,7 @@ def derivative_sigmoid_function (x):
 	try:
 		return -SLOPE*math.exp(SLOPE*x) / ((1 + math.exp(x*SLOPE) )**2)
 	except Exception as e:
-		print ("error in derivative sigmoid function x:{}".format(x))
+		print ("[ERROR] in derivative sigmoid function x:{}".format(x))
 		print (e)
 	return 0
 		
@@ -40,7 +40,8 @@ def constant_weigth_initializer_initializer ():
 	constant_weigth_initializer.nxt = -1
 	return constant_weigth_initializer 
 
-WEIGHTS = [-700, 700]
+WEIGHTS = [-1, 1]
+#~ WEIGHTS = [-700, 700]
 	
 def random_weigth_initializer ():
 	return random.uniform ( WEIGHTS[0], WEIGHTS[1] ) * 1.0 / 1000
@@ -48,15 +49,15 @@ def random_weigth_initializer ():
 
 SLOPE = -1
 
-ETA = 1
-ALPHA = 0.35
-LAMBDA = 0.002
+ETA = 0.001
+ALPHA = 0.0005
+LAMBDA = 0.00002
 
-ETA_DECAY=True
+ETA_DECAY=False
 ETA_RANGE=[0.5, 1]
 ETA_DECREASING_PERIOD=3/4
 
-MINIBATCH=True
+MINIBATCH=False
 #set MINIBATCH_SAMPLE=1 for online version
 MINIBATCH_SAMPLE=35
 
@@ -64,6 +65,7 @@ LAYERS_SIZE=(6,)
 
 NUM_TRIALS_PER_CONFIGURATION = 3
 MAX_EPOCH = 200
+NUM_FOLDS = 10
 
 class ConfigurableParams:
 	def __init__ ( self, params_dict ):

@@ -5,13 +5,16 @@ class MSELoss:
 	
 	def __init__(self):
 		self.loss = 0.0
+		self.num_patterns = 0
 		
 	def update (self, predicted, gold):
+		self.num_patterns += 1
 		for i in range(len(predicted)):
 			self.loss += 0.5*((predicted[i] - gold[i])**2)
-			
-		#~ print	
-
+	
+	def get ( self):
+		return self.loss / self.num_patterns
+	
 class Accuracy:
 	
 	def __init__ (self):

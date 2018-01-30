@@ -9,8 +9,8 @@ import Neuron
 import Statistics
 
 #~ import Monk
-#~ import HAR
-import Iris
+#~ import Iris
+import Machine
 
 from sklearn.utils import shuffle as parallel_shuffle
 
@@ -59,12 +59,12 @@ class NeuralNetwork:
 	def setInputDim (self, n):
 		
 		self.inputDim = n
-		#~ print ("[NeuralNetwork] input dim: {}".format(self.inputDim))
+		print ("[NeuralNetwork] input dim: {}".format(self.inputDim))
 	
 	def setOutputDim(self, n):		
 	
 		self.outputDim = n
-		#~ print ("[NeuralNetwork] output dim: {}".format(self.outputDim))
+		print ("[NeuralNetwork] output dim: {}".format(self.outputDim))
 		
 	def addLayer (self, n):
 		self.layersDim.append(n)
@@ -111,9 +111,14 @@ class NeuralNetwork:
 					self.archi_uscenti[i][n].append(m)
 			
 			for m in range(len(self.lista_neuroni[j])):
-				#~ self.lista_neuroni[j][m].initialize ("sigmoid", len(self.archi_entranti[j][m]), constant_weigth_initializer )
-				self.lista_neuroni[j][m].initialize ("sigmoid", len(self.archi_entranti[j][m]), Params.random_weigth_initializer )
-			
+				if not j==len(self.lista_neuroni)-1:
+					self.lista_neuroni[j][m].initialize ("sigmoid", len(self.archi_entranti[j][m]), Params.random_weigth_initializer )
+				else:
+					# REGRESSION: linear output unit
+					self.lista_neuroni[j][m].initialize ("id", len(self.archi_entranti[j][m]), Params.random_weigth_initializer )
+					# CLASSIFICATION: sigmoid output unit
+					#~ self.lista_neuroni[j][m].initialize ("sigmoid", len(self.archi_entranti[j][m]), Params.random_weigth_initializer )
+				
 		#archi uscenti dall'output
 		self.archi_uscenti.append([])
 		for i in range(len(self.lista_neuroni[-1])):
@@ -187,6 +192,10 @@ class NeuralNetwork:
 			for i,x,y in zip (range(1,len(xtrain)+1), xtrain, ytrain):
 				self.fire_network(x)
 				self.update_backpropagation(y)
+				print ("[DEBUG] after feeding with example {}".format(x))
+				print ("[DEBUG] out is {}".format([neuron.getValue() for neuron in self.lista_neuroni[-1]]))
+				print ("[DEBUG]   y is {}".format(y))
+				input()
 				loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
 				
 				if self.params.MINIBATCH and i%self.params.MINIBATCH_SAMPLE == 0:
@@ -209,24 +218,20 @@ class NeuralNetwork:
 			#~ self.dump()
 			#~ input()
 			
-			self.train_losses.append(loss.loss/len(xtrain))
-			#~ print ("train loss: {}".format(loss.loss/len(xtrain)))
-			
+			self.train_losses.append(loss.get())
 			
 			if self.validation_set is not None:
 				loss = Statistics.MSELoss()
 				#~ accuracy = Statistics.MulticlassificationAccuracy ()
-				accuracy = Statistics.Accuracy ()
+				#~ accuracy = Statistics.Accuracy ()
+				accuracy = Statistics.MSELoss ()
 				for x,y in zip (self.validation_set, self.validation_labels):
 					self.fire_network(x)
 					loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
 					accuracy.update ([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
-				self.validation_losses.append (loss.loss/len(self.validation_set))
+				self.validation_losses.append (loss.get())
 				self.validation_accuracies.append (accuracy.get())
-				
-				#~ print ("validation loss: {}".format(loss.loss/len(self.validation_set)))
-				#~ print ("validation accuracy: {}".format(accuracy.get()))
-				
+								
 			epoch += 1
 			
 			
@@ -341,19 +346,18 @@ if __name__=="__main__":
 	#~ test_sets = [ [[1,1] ] ]
 	#~ test_labels = [ [[0] ] ]
 	
-	# HAR
-	#~ train_sets = [ HAR.HAR_train_set ] 
-	#~ train_labels = [ HAR.HAR_train_labels ] 
-	#~ test_sets = [ HAR.HAR_test_set ] 
-	#~ test_labels = [ HAR.HAR_test_labels ] 
-	
 	# Iris
-	train_sets = [ Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] ] 
-	train_labels = [ Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):] ] 
-	test_sets = [ Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] ] 
-	test_labels = [ Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] ] 
+	#~ train_sets = [ Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] ] 
+	#~ train_labels = [ Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):] ] 
+	#~ test_sets = [ Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] ] 
+	#~ test_labels = [ Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] ] 
 
-	
+	# Machine
+	train_sets = [ Machine.machine_train_set ] 
+	train_labels = [ Machine.machine_train_labels ] 
+	test_sets = [ Machine.machine_test_set ] 
+	test_labels = [ Machine.machine_test_labels ] 
+
 	for i, train_s, train_l, test_s, test_l in zip ( range(1,len(train_sets)+1), train_sets, train_labels, test_sets, test_labels ):
 		
 		print ("--- TEST {} ---".format(i))
@@ -368,16 +372,18 @@ if __name__=="__main__":
 		
 		Plotting.plot_loss_accuracy_per_epoch (myNN)
 		
-		a = Statistics.MulticlassificationAccuracy ()
+		#~ a = Statistics.MulticlassificationAccuracy ()
 		#~ a = Statistics.Accuracy ()
+		a = Statistics.MSELoss ()
 		for x,y in zip(train_s, train_l):
 			o = myNN.predict (x)
 			a.update (o, y)
 			
 		print ("Accuracy on train set {}".format ( a.get() ))
 
-		a = Statistics.MulticlassificationAccuracy ()
+		#~ a = Statistics.MulticlassificationAccuracy ()
 		#~ a = Statistics.Accuracy ()
+		a = Statistics.MSELoss ()
 		for x,y in zip(test_s, test_l):
 			o = myNN.predict (x)
 			a.update (o, y)

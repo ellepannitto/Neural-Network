@@ -53,7 +53,7 @@ class KFoldCrossValidation:
 			accuracies.append (es.mean_accuracy)
 			epochs.append (es.mean_epochs)
 			
-			print ("{} - Fold {}/{} accuracy {}".format(self.model_name, i+1,self.K, es.mean_accuracy))
+			print ("[KFoldCrossValidation] {} - Fold {}/{} accuracy {}".format(self.model_name, i+1,self.K, es.mean_accuracy))
 			
 				
 		self.mean_accuracy = np.average(accuracies)
@@ -66,6 +66,7 @@ class KFoldCrossValidation:
 		with open ( "../dumps/"+self.model_name, "w" ) as fout:
 			fout.write ("test finished at {}\n\n".format (time.strftime('%d/%m/%Y at %H:%M')))
 			fout.write ("PARAMETERS\n")
+			fout.write ("LAYERS_SIZE={}\n".format(self.params.LAYERS_SIZE))
 			fout.write ("ALPHA={}\n".format(self.params.ALPHA))
 			fout.write ("LAMBDA={}\n".format(self.params.LAMBDA))
 			fout.write ("ETA_DECAY={}\n".format(self.params.ETA_DECAY))
