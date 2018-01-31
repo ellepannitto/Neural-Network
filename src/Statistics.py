@@ -1,5 +1,6 @@
 
 import numpy as np
+import math
 
 class MSELoss:
 	
@@ -13,6 +14,22 @@ class MSELoss:
 			self.loss += 0.5*((predicted[i] - gold[i])**2)
 	
 	def get ( self):
+		return self.loss / self.num_patterns
+
+class MEELoss:
+	
+	def __init__(self):
+		self.loss = 0.0
+		self.num_patterns = 0
+		
+	def update (self, predicted, gold):
+		self.num_patterns += 1
+		dist = 0
+		for i in range(len(predicted)):
+			dist += (predicted[i] - gold[i])**2
+		self.loss += math.sqrt ( dist )
+	
+	def get ( self ):
 		return self.loss / self.num_patterns
 	
 class Accuracy:

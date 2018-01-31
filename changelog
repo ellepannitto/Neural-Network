@@ -1,3 +1,10 @@
+Neural-Network ver 0.6
+  
+  * Tested GridSearch and RandomSearch.
+  * Implemented parser for the CUP dataset
+
+-- Lucio Messina <luciomessina94@gmail.com> Thu, 02 Jan 2018 00:03
+
 Neural-Network ver 0.5.2
   
   * Normalized Hardware Machine dataset.

@@ -6,16 +6,17 @@ import Params
 from CrossValidation import KFoldCrossValidation
 import itertools
 
-import Iris
-import Monk
+#~ import Iris
+#~ import Monk
+import Machine
 
 coarse_choices_dict = {
-				"ALPHA" : np.arange (0,1.1,0.1),
-				"ETA" : np.arange (0.1,1.1,0.1),
-				"LAMBDA" : np.arange (0.001,0.01,0.001),
-				"ETA_DECAY" : [True],
+				"ALPHA" : np.arange (0.01,0.07,0.1),
+				"ETA" : np.arange (0.02,0.3,0.05),
+				"LAMBDA" : np.arange (0.00005,0.0003,0.00005),
+				"ETA_DECAY" : [True, False],
 				"MINIBATCH" : [True, False],
-				"LAYERS_SIZE" : [(6,)],
+				"LAYERS_SIZE" : [(6,),(8,),(4,),(5,2)],
 			   }
 
 fine_choices_dict = {
@@ -57,11 +58,13 @@ class RandomSearch:
 		cv.perform ()
 		cv.dump ()
 		self.results[name] = cv.mean_accuracy
+		print ("{}\t{}".format(name, cv.mean_accuracy))
 		print ("[RandomSearch] Ended CrossValidation with id {}".format(params.ID))
 		
 		
 	def perform ( self, choices_dict ):
 		print ("[RandomSearch] Initializing...")
+		print ("MODEL\tACCURACY")
 		
 		configurations = []
 		for i in range (self.configurations_number):
@@ -73,7 +76,7 @@ class RandomSearch:
 		print ("[RandomSearch] created {} random configurations".format(self.configurations_number))
 		
 		pool = Pool ( self.threads_number )
-		pool.map (test_configuration, configurations)
+		pool.map (self.test_configuration, configurations)
 		
 		print ("[RandomSearch] Finished.")
 		
@@ -152,18 +155,23 @@ if __name__=="__main__":
 	#~ test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
 	
 	# Monk 3
-	train_s = Monk.monk3_training_set
-	train_l = Monk.monk3_training_labels
-	test_s  = Monk.monk3_test_set
-	test_l  = Monk.monk3_test_labels
+	#~ train_s = Monk.monk3_training_set
+	#~ train_l = Monk.monk3_training_labels
+	#~ test_s  = Monk.monk3_test_set
+	#~ test_l  = Monk.monk3_test_labels
+	
+	train_s = Machine.machine_train_set
+	train_l = Machine.machine_train_labels
+	test_s = Machine.machine_test_set
+	test_l = Machine.machine_test_labels 
 	
 	#random parameter search
-	#~ rs = RandomSearch ( train_s, train_l, configurations_number=20, threads_number=4, model_name="Monk3" )
-	#~ rs.perform (coarse_choices_dict)
+	rs = RandomSearch ( train_s, train_l, configurations_number=200, threads_number=4, model_name="Machine" )
+	rs.perform (coarse_choices_dict)
 	#~ rs.dump_results ()
 	
 	#grid search
-	gs = GridSearch ( train_s, train_l, threads_number=4, model_name="Monk3" )
-	gs.perform (fine_choices_dict)
+	#~ gs = GridSearch ( train_s, train_l, threads_number=4, model_name="Monk3" )
+	#~ gs.perform (fine_choices_dict)
 	#~ gs.dump_results ()
 	

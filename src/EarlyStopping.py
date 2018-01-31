@@ -65,7 +65,7 @@ class EarlyStopping:
 			loss_per_epoch = myNN.validation_losses
 			
 			when_to_stop = self.find_best_epoch ( loss_per_epoch )
-			print ("trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
+			#~ print ("[EarlyStopping] trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
 			
 			if do_plots:
 				Plotting.plot_loss_accuracy_per_epoch (myNN, show=False)
