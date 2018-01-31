@@ -3,7 +3,6 @@
 import Iris
 import Params
 from sklearn.neural_network import MLPClassifier
-#~ import HAR
 import Statistics
 
 if __name__ == "__main__":
@@ -14,11 +13,6 @@ if __name__ == "__main__":
 	#~ test_sets    = [ Monk.monk3_test_set ]
 	#~ test_labels  = [ [ y[0] for y in Monk.monk3_test_labels ] ]
 	
-	# HAR
-	#~ train_sets = [ HAR.HAR_train_set ] 
-	#~ train_labels = [ HAR.HAR_train_labels ] 
-	#~ test_sets = [ HAR.HAR_test_set ] 
-	#~ test_labels = [ HAR.HAR_test_labels ] 
 	
 	# Iris
 	train_sets = [ Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] ] 

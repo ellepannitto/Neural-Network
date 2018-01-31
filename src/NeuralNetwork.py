@@ -9,7 +9,7 @@ import Neuron
 import Statistics
 
 #~ import Monk
-#~ import Iris
+import Iris
 import Machine
 
 from sklearn.utils import shuffle as parallel_shuffle
@@ -59,12 +59,12 @@ class NeuralNetwork:
 	def setInputDim (self, n):
 		
 		self.inputDim = n
-		print ("[NeuralNetwork] input dim: {}".format(self.inputDim))
+		#~ print ("[NeuralNetwork] input dim: {}".format(self.inputDim))
 	
 	def setOutputDim(self, n):		
 	
 		self.outputDim = n
-		print ("[NeuralNetwork] output dim: {}".format(self.outputDim))
+		#~ print ("[NeuralNetwork] output dim: {}".format(self.outputDim))
 		
 	def addLayer (self, n):
 		self.layersDim.append(n)
@@ -192,10 +192,10 @@ class NeuralNetwork:
 			for i,x,y in zip (range(1,len(xtrain)+1), xtrain, ytrain):
 				self.fire_network(x)
 				self.update_backpropagation(y)
-				print ("[DEBUG] after feeding with example {}".format(x))
-				print ("[DEBUG] out is {}".format([neuron.getValue() for neuron in self.lista_neuroni[-1]]))
-				print ("[DEBUG]   y is {}".format(y))
-				input()
+				#~ print ("[DEBUG] after feeding with example {}".format(x))
+				#~ print ("[DEBUG] out is {}".format([neuron.getValue() for neuron in self.lista_neuroni[-1]]))
+				#~ print ("[DEBUG]   y is {}".format(y))
+				#~ input()
 				loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
 				
 				if self.params.MINIBATCH and i%self.params.MINIBATCH_SAMPLE == 0:

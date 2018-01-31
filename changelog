@@ -1,3 +1,10 @@
+Neural-Network ver 0.5.2
+  
+  * Normalized Hardware Machine dataset.
+  * Standardized MSELoss interface.
+
+-- Lucio Messina <luciomessina94@gmail.com> Wed, 31 Jan 2018 17:47
+
 Neural-Network ver 0.5.1
   
   * Implemented GridSearch on a parameter grid.

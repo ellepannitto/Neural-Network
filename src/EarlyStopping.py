@@ -3,7 +3,8 @@ import numpy as np
 
 import Params
 #~ import Monk
-import Iris
+#~ import Iris
+import Machine
 from NeuralNetwork import NeuralNetwork
 import Plotting
 
@@ -15,24 +16,36 @@ class EarlyStopping:
 		self.validation_set = validation_set
 		self.validation_labels = validation_labels
 		
+		#~ print ("[EarlyStopping] train_set dim: {}".format(len(train_set)))
+		#~ print ("[EarlyStopping] validation_set dim: {}".format(len(validation_set)))	
+		#~ input()
+		
 		self.layers_size = layers_size
 		self.params = params
 
 		
 	#TODO: make this more resistant to spikes
 	def find_best_epoch ( self, losses ):
-		MAX_WINDOW = 50
 		MIN_WINDOW = 5
-		MAX_TOLLERANCE = 0.05
-		for i in range (MAX_WINDOW, len(losses)):
-			tollerance = MAX_TOLLERANCE * ( 1- i / len(losses) )
-			window = int ( (MAX_WINDOW - MIN_WINDOW)*(1-i/len(losses)) + MIN_WINDOW )
-			if all ([ losses[j]+tollerance < losses[i] for j in range(i-window, i) ] ) :
-				print ("[DEBUG] arg min :{}".format(i-window+1))
-				return np.argmin (losses[:i-window+1])
+		INITIAL_TOLLERANCE = -0.05
+		FINAL_TOLLERANCE = 0.01
+		prev_avg = 0
+		for i in range (MIN_WINDOW):
+			prev_avg += losses[i]/MIN_WINDOW
+		
+		#~ print ("[DEBUG] initial prev_avg: {}".format(prev_avg))
+		for i in range (MIN_WINDOW, len(losses)):
+			tollerance = INITIAL_TOLLERANCE + (FINAL_TOLLERANCE - INITIAL_TOLLERANCE) * ( i / len(losses) )
+			#~ print ("[DEBUG] i={} loss={} prev_avg-toll={}".format(i, losses[i], prev_avg-tollerance))
+			if losses[i] > prev_avg-tollerance :
+				#~ print ("[DEBUG] stopping")
+				return np.argmin (losses[:i])
+			prev_avg -= losses[i-MIN_WINDOW]/MIN_WINDOW
+			prev_avg += losses[i] / MIN_WINDOW
 		
 		#~ print ("[DEBUG] argmin of all the epochs") 
 		return np.argmin (losses)
+		
 		
 	def perform (self, do_plots = False):
 		
@@ -52,7 +65,7 @@ class EarlyStopping:
 			loss_per_epoch = myNN.validation_losses
 			
 			when_to_stop = self.find_best_epoch ( loss_per_epoch )
-			#~ print ("trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
+			print ("trial {} : epochs {} accuracy {}".format (i, when_to_stop, accuracy_per_epoch[when_to_stop]))
 			
 			if do_plots:
 				Plotting.plot_loss_accuracy_per_epoch (myNN, show=False)
@@ -70,10 +83,16 @@ class EarlyStopping:
 if __name__ == "__main__":
 	
 	# Iris
-	train_s = Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] 
-	train_l = Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):]
-	test_s =  Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] 
-	test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
+	#~ train_s = Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] 
+	#~ train_l = Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):]
+	#~ test_s =  Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] 
+	#~ test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
 	
+	# Machine
+	train_s = Machine.machine_train_set
+	train_l = Machine.machine_train_labels 
+	test_s = Machine.machine_test_set
+	test_l = Machine.machine_test_labels 
+
 	es = EarlyStopping (train_s, train_l, test_s, test_l, layers_size=(6,))
 	es.perform (do_plots=True)

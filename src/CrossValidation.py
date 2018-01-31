@@ -8,9 +8,9 @@ import EarlyStopping
 import OneHotEncoder
 import Params
 
-import Iris
-import Monk
-#~ import HAR
+#~ import Iris
+#~ import Monk
+import Machine
 
 
 class KFoldCrossValidation:
@@ -89,17 +89,23 @@ class KFoldCrossValidation:
 if __name__=="__main__":
 	
 	# Iris
-	train_s = Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] 
-	train_l = Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):]
-	test_s =  Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] 
-	test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
+	#~ train_s = Iris.iris_train_set[int(len(Iris.iris_train_set)/8):] 
+	#~ train_l = Iris.iris_train_labels[int(len(Iris.iris_train_set)/8):]
+	#~ test_s =  Iris.iris_train_set[:int(len(Iris.iris_train_set)/8)] 
+	#~ test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
 	
 	# Monk 3
 	#~ train_s = Monk.monk3_training_set
 	#~ train_l = Monk.monk3_training_labels
 	#~ test_s  = Monk.monk3_test_set
 	#~ test_l  = Monk.monk3_test_labels
-			
-	kfcv = KFoldCrossValidation ( train_s, train_l, K=10, model_name="Iris", shuffle=True )
-	kfcv.perform( do_plots=False )
+	
+	# Machine
+	train_s = Machine.machine_train_set
+	train_l = Machine.machine_train_labels
+	test_s = Machine.machine_test_set
+	test_l = Machine.machine_test_labels 
+
+	kfcv = KFoldCrossValidation ( train_s+test_s, train_l+test_l, K=10, model_name="Machine", shuffle=True )
+	kfcv.perform( do_plots=True )
 	kfcv.dump ()

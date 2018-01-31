@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 #~ random.seed(0)
 
@@ -40,21 +41,23 @@ def constant_weigth_initializer_initializer ():
 	constant_weigth_initializer.nxt = -1
 	return constant_weigth_initializer 
 
-WEIGHTS = [-1, 1]
-#~ WEIGHTS = [-700, 700]
+#~ WEIGHTS = [-1, 1]
+WEIGHTS = [-700, 700]
 	
+#~ def random_weigth_initializer ():
+	#~ return random.uniform ( WEIGHTS[0], WEIGHTS[1] ) * 1.0 / 1000
 def random_weigth_initializer ():
-	return random.uniform ( WEIGHTS[0], WEIGHTS[1] ) * 1.0 / 1000
+	return np.random.normal ( 0, 0.01 )
 
 
 SLOPE = -1
 
-ETA = 0.001
-ALPHA = 0.0005
-LAMBDA = 0.00002
+ETA = 0.1
+ALPHA = 0.04
+LAMBDA = 0.0002
 
-ETA_DECAY=False
-ETA_RANGE=[0.5, 1]
+ETA_DECAY=True
+ETA_RANGE=[0.6, 0.1]
 ETA_DECREASING_PERIOD=3/4
 
 MINIBATCH=False
