@@ -4,7 +4,8 @@ import numpy as np
 import Params
 #~ import Monk
 #~ import Iris
-import Machine
+#~ import Machine
+import MLCUP2017
 from NeuralNetwork import NeuralNetwork
 import Plotting
 
@@ -24,27 +25,27 @@ class EarlyStopping:
 		self.params = params
 
 		
-	#TODO: make this more resistant to spikes
 	def find_best_epoch ( self, losses ):
 		MIN_WINDOW = 5
 		INITIAL_TOLLERANCE = -0.05
 		FINAL_TOLLERANCE = 0.01
 		prev_avg = 0
-		for i in range (MIN_WINDOW):
-			prev_avg += losses[i]/MIN_WINDOW
+		SPIKY_ZONE = int (len(losses) / 10)
+		for i in range (SPIKY_ZONE):
+			prev_avg += losses[i]/SPIKY_ZONE
 		
 		#~ print ("[DEBUG] initial prev_avg: {}".format(prev_avg))
-		for i in range (MIN_WINDOW, len(losses)):
+		for i in range (SPIKY_ZONE+MIN_WINDOW, len(losses)):
 			tollerance = INITIAL_TOLLERANCE + (FINAL_TOLLERANCE - INITIAL_TOLLERANCE) * ( i / len(losses) )
 			#~ print ("[DEBUG] i={} loss={} prev_avg-toll={}".format(i, losses[i], prev_avg-tollerance))
 			if losses[i] > prev_avg-tollerance :
 				#~ print ("[DEBUG] stopping")
-				return np.argmin (losses[:i])
+				return SPIKY_ZONE + np.argmin (losses[SPIKY_ZONE:i])
 			prev_avg -= losses[i-MIN_WINDOW]/MIN_WINDOW
 			prev_avg += losses[i] / MIN_WINDOW
 		
 		#~ print ("[DEBUG] argmin of all the epochs") 
-		return np.argmin (losses)
+		return SPIKY_ZONE + np.argmin (losses[SPIKY_ZONE:])
 		
 		
 	def perform (self, do_plots = False):
@@ -89,10 +90,17 @@ if __name__ == "__main__":
 	#~ test_l =  Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] 
 	
 	# Machine
-	train_s = Machine.machine_train_set
-	train_l = Machine.machine_train_labels 
-	test_s = Machine.machine_test_set
-	test_l = Machine.machine_test_labels 
-
-	es = EarlyStopping (train_s, train_l, test_s, test_l, layers_size=(6,))
+	#~ train_s = Machine.machine_train_set
+	#~ train_l = Machine.machine_train_labels 
+	#~ test_s = Machine.machine_test_set
+	#~ test_l = Machine.machine_test_labels 
+	
+	# MLCUP2017
+	test_len = int(len(MLCUP2017.cup_train_set)/10)
+	train_s = MLCUP2017.cup_train_set[test_len:]
+	train_l = MLCUP2017.cup_train_labels[test_len:]
+	test_s = MLCUP2017.cup_train_set[:test_len]  
+	test_l = MLCUP2017.cup_train_set[:test_len] 
+	
+	es = EarlyStopping (train_s, train_l, test_s, test_l, layers_size=Params.LAYERS_SIZE)
 	es.perform (do_plots=True)

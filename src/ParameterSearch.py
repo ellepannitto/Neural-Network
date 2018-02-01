@@ -8,15 +8,16 @@ import itertools
 
 #~ import Iris
 #~ import Monk
-import Machine
+#~ import Machine
+import MLCUP2017
 
 coarse_choices_dict = {
-				"ALPHA" : np.arange (0.01,0.07,0.1),
-				"ETA" : np.arange (0.02,0.3,0.05),
-				"LAMBDA" : np.arange (0.00005,0.0003,0.00005),
+				"ALPHA" : np.arange (0.01,1.01,0.02),
+				"ETA" : np.arange (0.01,1.01,0.02),
+				"LAMBDA" : np.arange (0.001,0.501,0.001),
 				"ETA_DECAY" : [True, False],
 				"MINIBATCH" : [True, False],
-				"LAYERS_SIZE" : [(6,),(8,),(4,),(5,2)],
+				"LAYERS_SIZE" : [(6,),(8,),(4,),(7,3),(7,5,3)],
 			   }
 
 fine_choices_dict = {
@@ -55,10 +56,15 @@ class RandomSearch:
 		print ("[RandomSearch] Starting CrossValidation with id {}".format(params.ID))
 		name = self.model_name + "_" + str(params.ID)
 		cv = KFoldCrossValidation ( self.train_set, self.train_labels, params=params, K=Params.NUM_FOLDS, model_name = name )
-		cv.perform ()
-		cv.dump ()
-		self.results[name] = cv.mean_accuracy
-		print ("{}\t{}".format(name, cv.mean_accuracy))
+		try:
+			cv.perform ()
+			cv.dump ()			
+			self.results[name] = cv.mean_accuracy
+			print ("{}\t{}".format(name, cv.mean_accuracy))
+		except:
+			print ("[RandomSearch] Problem with CrossValidation with id {}".format(params.ID))
+			cv.report_error ()
+			
 		print ("[RandomSearch] Ended CrossValidation with id {}".format(params.ID))
 		
 		
@@ -99,10 +105,14 @@ class GridSearch:
 		print ("[GridSearch] Starting CrossValidation with id {}".format(params.ID))
 		name = self.model_name + "_" + str(params.ID)
 		cv = KFoldCrossValidation ( self.train_set, self.train_labels, params=params, K=Params.NUM_FOLDS, model_name = name )
-		cv.perform ()
-		cv.dump ()
-		self.results[name] = cv.mean_accuracy
-		print ("{}\t{}".format(name, cv.mean_accuracy))
+		try:
+			cv.perform ()
+			cv.dump ()
+			self.results[name] = cv.mean_accuracy
+			print ("{}\t{}".format(name, cv.mean_accuracy))
+		except:
+			print ("[RandomSearch] Problem with CrossValidation with id {}".format(params.ID))
+			cv.report_error ()
 		print ("[GridSearch] Ended CrossValidation with id {}".format(params.ID))
 	
 	def perform ( self, choices_dict ):
@@ -160,13 +170,18 @@ if __name__=="__main__":
 	#~ test_s  = Monk.monk3_test_set
 	#~ test_l  = Monk.monk3_test_labels
 	
-	train_s = Machine.machine_train_set
-	train_l = Machine.machine_train_labels
-	test_s = Machine.machine_test_set
-	test_l = Machine.machine_test_labels 
+	#Machine
+	#~ train_s = Machine.machine_train_set
+	#~ train_l = Machine.machine_train_labels
+	#~ test_s = Machine.machine_test_set
+	#~ test_l = Machine.machine_test_labels 
+	
+	# MLCUP2017
+	train_s = MLCUP2017.cup_train_set
+	train_l = MLCUP2017.cup_train_labels
 	
 	#random parameter search
-	rs = RandomSearch ( train_s, train_l, configurations_number=200, threads_number=4, model_name="Machine" )
+	rs = RandomSearch ( train_s, train_l, configurations_number=1000, threads_number=4, model_name="MLCUP2017" )
 	rs.perform (coarse_choices_dict)
 	#~ rs.dump_results ()
 	

@@ -5,21 +5,21 @@ import numpy as np
 #~ random.seed(0)
 
 def sigmoid_function (x):
-	try:
+	#~ try:
 		return 1.0 / (1 + math.exp(x*SLOPE) )
-	except Exception as e: 
-		print ("[ERROR] in sigmoid function x:{}".format(x))
-		print (e)
+	#~ except Exception as e: 
+		#~ print ("[ERROR] in sigmoid function x:{}".format(x))
+		#~ print (e)
 		
-	return 0
+	#~ return 0
 
 def derivative_sigmoid_function (x):
-	try:
+	#~ try:
 		return -SLOPE*math.exp(SLOPE*x) / ((1 + math.exp(x*SLOPE) )**2)
-	except Exception as e:
-		print ("[ERROR] in derivative sigmoid function x:{}".format(x))
-		print (e)
-	return 0
+	#~ except Exception as e:
+		#~ print ("[ERROR] in derivative sigmoid function x:{}".format(x))
+		#~ print (e)
+	#~ return 0
 		
 ActivationFunctions = {
 	"sigmoid": sigmoid_function,
@@ -47,24 +47,24 @@ WEIGHTS = [-700, 700]
 #~ def random_weigth_initializer ():
 	#~ return random.uniform ( WEIGHTS[0], WEIGHTS[1] ) * 1.0 / 1000
 def random_weigth_initializer ():
-	return np.random.normal ( 0, 0.01 )
+	return np.random.normal ( 0, 0.7 )
 
 
 SLOPE = -1
 
-ETA = 0.1
-ALPHA = 0.04
-LAMBDA = 0.0002
+ETA = 0.5
+ALPHA = 0.1
+LAMBDA = 0.02
 
 ETA_DECAY=True
-ETA_RANGE=[0.6, 0.1]
+ETA_RANGE=[0.01, 0.5]
 ETA_DECREASING_PERIOD=3/4
 
 MINIBATCH=False
 #set MINIBATCH_SAMPLE=1 for online version
 MINIBATCH_SAMPLE=35
 
-LAYERS_SIZE=(6,)
+LAYERS_SIZE=(6,4)
 
 NUM_TRIALS_PER_CONFIGURATION = 3
 MAX_EPOCH = 200

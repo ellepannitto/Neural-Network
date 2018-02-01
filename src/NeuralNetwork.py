@@ -9,8 +9,9 @@ import Neuron
 import Statistics
 
 #~ import Monk
-import Iris
-import Machine
+#~ import Iris
+#~ import Machine
+import MLCUP2017
 
 from sklearn.utils import shuffle as parallel_shuffle
 
@@ -224,7 +225,8 @@ class NeuralNetwork:
 				loss = Statistics.MSELoss()
 				#~ accuracy = Statistics.MulticlassificationAccuracy ()
 				#~ accuracy = Statistics.Accuracy ()
-				accuracy = Statistics.MSELoss ()
+				#~ accuracy = Statistics.MSELoss ()
+				accuracy = Statistics.MEELoss ()
 				for x,y in zip (self.validation_set, self.validation_labels):
 					self.fire_network(x)
 					loss.update([neuron.getValue() for neuron in self.lista_neuroni[-1]], y)
@@ -353,10 +355,17 @@ if __name__=="__main__":
 	#~ test_labels = [ Iris.iris_train_labels[:int(len(Iris.iris_train_set)/8)] ] 
 
 	# Machine
-	train_sets = [ Machine.machine_train_set ] 
-	train_labels = [ Machine.machine_train_labels ] 
-	test_sets = [ Machine.machine_test_set ] 
-	test_labels = [ Machine.machine_test_labels ] 
+	#~ train_sets = [ Machine.machine_train_set ] 
+	#~ train_labels = [ Machine.machine_train_labels ] 
+	#~ test_sets = [ Machine.machine_test_set ] 
+	#~ test_labels = [ Machine.machine_test_labels ] 
+
+	# MLCUP2017
+	test_len = int(len(MLCUP2017.cup_train_set)/10)
+	train_sets = [ MLCUP2017.cup_train_set[test_len:] ] 
+	train_labels = [ MLCUP2017.cup_train_labels[test_len:] ]
+	test_sets = [ MLCUP2017.cup_train_set[:test_len] ] 
+	test_labels = [ MLCUP2017.cup_train_set[:test_len] ]
 
 	for i, train_s, train_l, test_s, test_l in zip ( range(1,len(train_sets)+1), train_sets, train_labels, test_sets, test_labels ):
 		
@@ -364,6 +373,8 @@ if __name__=="__main__":
 		
 		myNN = NeuralNetwork()
 		myNN.addLayer(6)
+		#~ myNN.addLayer(4)
+		#~ myNN.addLayer(2)
 		
 		myNN.set_train (train_s, train_l)
 		myNN.set_validation (test_s, test_l)
@@ -374,7 +385,8 @@ if __name__=="__main__":
 		
 		#~ a = Statistics.MulticlassificationAccuracy ()
 		#~ a = Statistics.Accuracy ()
-		a = Statistics.MSELoss ()
+		#~ a = Statistics.MSELoss ()
+		a = Statistics.MEELoss ()
 		for x,y in zip(train_s, train_l):
 			o = myNN.predict (x)
 			a.update (o, y)
@@ -383,7 +395,8 @@ if __name__=="__main__":
 
 		#~ a = Statistics.MulticlassificationAccuracy ()
 		#~ a = Statistics.Accuracy ()
-		a = Statistics.MSELoss ()
+		#~ a = Statistics.MSELoss ()
+		a = Statistics.MEELoss ()
 		for x,y in zip(test_s, test_l):
 			o = myNN.predict (x)
 			a.update (o, y)

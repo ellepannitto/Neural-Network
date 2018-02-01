@@ -84,6 +84,25 @@ class KFoldCrossValidation:
 			fout.write ("mean epochs: {} +/- {}\n".format (self.mean_epochs, self.var_epochs))
 			fout.write ("\n")
 			
+	def report_error ( self ):
+		
+		with open ( "../dumps/"+self.model_name, "w" ) as fout:
+			fout.write ("test finished at {}\n\n".format (time.strftime('%d/%m/%Y at %H:%M')))
+			fout.write ("PARAMETERS\n")
+			fout.write ("LAYERS_SIZE={}\n".format(self.params.LAYERS_SIZE))
+			fout.write ("ALPHA={}\n".format(self.params.ALPHA))
+			fout.write ("LAMBDA={}\n".format(self.params.LAMBDA))
+			fout.write ("ETA_DECAY={}\n".format(self.params.ETA_DECAY))
+			if self.params.ETA_DECAY:
+				fout.write ("ETA_RANGE={}\n".format(self.params.ETA_RANGE))
+				fout.write ("ETA_DECREASING_PERIOD={}\n".format(self.params.ETA_DECREASING_PERIOD))
+			else:
+				fout.write ("ETA={}\n".format(self.params.ETA))
+			fout.write ("MINIBATCH={}\n".format (self.params.MINIBATCH))
+			if self.params.MINIBATCH:
+				fout.write ("MINIBATCH_SAMPLE={}\n".format (self.params.MINIBATCH_SAMPLE))
+			fout.write ("\nTHERE WERE ERRORS WHILE EXECUTING KFOLD WITH THESE PARAMETERS\n")
+			
 
 
 if __name__=="__main__":

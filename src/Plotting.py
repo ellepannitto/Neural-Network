@@ -20,7 +20,7 @@ def show_plot ():
 		plt.xlabel('epoch')
 		axes = plt.gca()
 		axes.set_xlim([0,x_limit])
-		axes.set_ylim([0,1])
+		#~ axes.set_ylim([0,1])
 		plt.tight_layout()
 		plt.show()
 	
