@@ -365,7 +365,7 @@ if __name__=="__main__":
 	train_sets = [ MLCUP2017.cup_train_set[test_len:] ] 
 	train_labels = [ MLCUP2017.cup_train_labels[test_len:] ]
 	test_sets = [ MLCUP2017.cup_train_set[:test_len] ] 
-	test_labels = [ MLCUP2017.cup_train_set[:test_len] ]
+	test_labels = [ MLCUP2017.cup_train_labels[:test_len] ]
 
 	for i, train_s, train_l, test_s, test_l in zip ( range(1,len(train_sets)+1), train_sets, train_labels, test_sets, test_labels ):
 		

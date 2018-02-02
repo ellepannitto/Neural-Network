@@ -9,7 +9,7 @@ def plot_loss_accuracy_per_epoch ( nn, show=True ):
 	plt.plot(list(range(x_limit)), nn.train_losses, 'r--', label='train error')
 	if nn.validation_losses is not None:
 		plt.plot(list(range(x_limit)), nn.validation_losses, 'b-', label='validation error')
-		plt.plot(list(range(x_limit)), nn.validation_accuracies, 'k-', label='validation Accuracy')
+		plt.plot(list(range(x_limit)), nn.validation_accuracies, 'k-', label='validation Euclidean Error')
 	
 	if show:
 		show_plot()

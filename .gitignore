@@ -89,5 +89,5 @@ ENV/
 .ropeproject
 
 # Folders
-datasets
+results
 dumps

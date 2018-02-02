@@ -1,15 +1,22 @@
+Neural-Network ver 0.7
+  
+  * Implemented test_prediction, to predict the output of the test set
+  * Imolemented model_selection, to select the best models and test them on the validation set.
+
+-- Lucio Messina <luciomessina94@gmail.com> Tue, 03 Feb 2018 16:48
+
 Neural-Network ver 0.6.1
   
   * Started GridSearch on the CUP dataset
 
--- Lucio Messina <luciomessina94@gmail.com> Tue, 02 Jan 2018 17:43
+-- Lucio Messina <luciomessina94@gmail.com> Tue, 02 Feb 2018 17:43
 
 Neural-Network ver 0.6
   
   * Tested GridSearch and RandomSearch.
   * Implemented parser for the CUP dataset
 
--- Lucio Messina <luciomessina94@gmail.com> Thu, 02 Jan 2018 00:03
+-- Lucio Messina <luciomessina94@gmail.com> Thu, 02 Feb 2018 00:03
 
 Neural-Network ver 0.5.2
   
