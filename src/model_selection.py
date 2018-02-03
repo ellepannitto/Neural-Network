@@ -121,6 +121,6 @@ if __name__ == "__main__":
 				fout.write (",".join([ str(el) for el in o_not_normalized ]))
 				fout.write ("\n")
 				
-			print ("Accuracy on validation set (not normalized labels) {}".format ( a.get() ))
-			print ("Accuracy on validation set (    normalized labels) {}".format ( a_not_normalized.get() ))
+			print ("Accuracy on validation set (    normalized labels) {}".format ( a.get() ))
+			print ("Accuracy on validation set (not normalized labels) {}".format ( a_not_normalized.get() ))
 		
