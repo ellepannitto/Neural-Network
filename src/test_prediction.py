@@ -1,3 +1,8 @@
+'''
+  this module trains a NeuralNetwork with a train set, then predicts the
+  output for a blind test sets and de-normalize it, using the inverse z-score
+  transformation that was applied to the known output labels.
+'''
 
 import NeuralNetwork
 import os
@@ -8,6 +13,9 @@ import Statistics
 
 from model_selection import parse_result_file
 
+'''
+  prediction on the test set
+'''
 if __name__ == "__main__":
 	
 	model_name = "MLCUP2017_567_ludo"

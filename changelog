@@ -1,7 +1,12 @@
+Neural-Network ver 0.7.4
+  
+  * finished commenting code, 
+
+-- Lucio Messina <luciomessina94@gmail.com> Tue, 06 Feb 2018 23:01
+
 Neural-Network ver 0.7.3
   
-  * Commented the Params, CrossValidation, MLCUP2017, Machine, Iris,
-  EarlyStopping, Baseline, Params, Monk module.
+  * Commented the Params, CrossValidation, MLCUP2017, Machine, Iris, EarlyStopping, Baseline, Params, Monk module.
 
 -- Lucio Messina <luciomessina94@gmail.com> Tue, 06 Feb 2018 16:42
 

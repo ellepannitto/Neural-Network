@@ -1,9 +1,21 @@
+'''
+ this module contains utilities for plotting learning curves, given a NeuralNetwork.
+'''
 
 import matplotlib.pyplot as plt
 
 x_limit = 0
 
 def plot_loss_accuracy_per_epoch ( nn, show=True ):
+	'''
+	  plots train and validation losses and validation accuracy/error (it depends on the task) per epoch, given a neural network.
+	  
+	  :params:
+	   nn:   the NeuralNetwork from which losses and accuracies per epoch are taken
+	   show: if True, the plot is immediatly showed to the user. Default: True
+	  
+	'''
+	
 	global x_limit
 	x_limit = len(nn.train_losses)
 	plt.plot(list(range(x_limit)), nn.train_losses, 'r--', label='train error')
@@ -15,6 +27,9 @@ def plot_loss_accuracy_per_epoch ( nn, show=True ):
 		show_plot()
 
 def show_plot ():
+	'''
+	  shows the current plot to the user.
+	'''
 		plt.legend()
 		plt.ylabel('Loss')
 		plt.xlabel('epoch')
@@ -25,5 +40,11 @@ def show_plot ():
 		plt.show()
 	
 def plot_vertical_line (x):
+	'''
+	  plots a vertical line on a given coordinate x.
+	  
+	  :params:
+	   x: the x coordiante where the line have to be plotted
+	'''
 	plt.plot([x,x], [0,1],'g')
 	

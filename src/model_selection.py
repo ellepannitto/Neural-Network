@@ -1,3 +1,10 @@
+''' 
+  This module contains utilities to take in input the results of a GridSearch or a RandomSearch
+  and select the best models in terms of accuracy or regression error (it
+  depends on the task type). Then, it is possible to try these models on a validation set,
+  reporting the results.
+'''
+
 
 import NeuralNetwork
 import os
@@ -7,6 +14,15 @@ import Plotting
 import Statistics
 
 def parse_result_file (filename):
+	'''
+	  given a file generated from a GridSearch or a RandomSearch, parses it to retrieve the parameters used in that model
+	  and returns a dictionary with that configuration.
+	  
+	  :params:
+	   filename: the name of the file to parse
+	  
+	  :returns: a dictionary containing the parsed configuration
+	'''
 	ret = {}
 	float_parameters = ["ETA", "LAMBDA", "ALPHA"]
 	bool_parameters = ["MINIBATCH", "ETA_DECAY"]
@@ -35,6 +51,9 @@ def parse_result_file (filename):
 	ret["MINIBATCH_SAMPLE"] = 35
 	return ret
 
+'''
+  performs model selection
+'''
 if __name__ == "__main__":
 	
 	models = {}

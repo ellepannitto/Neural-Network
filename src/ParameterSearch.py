@@ -1,3 +1,6 @@
+'''
+  this module contains classes to find the best hyperparameters using a random search or a grid search on the hyperparameters space. 
+'''
 
 import numpy as np
 import random
@@ -30,6 +33,16 @@ fine_choices_dict = {
 			   }
 
 def normalize_configuration ( conf ):
+	'''
+	  normalizes a configuration conf, generating the parameters ETA_RANGE and ETA_DECREASING_PERIOD if conf.ETA_DECAY is True,
+	  and the parameters MINIBATCH_SAMPLE if conf.MINIBATCH is True
+	  
+	  :params:
+	   conf: the configuration to be normalized
+	   
+	  :returns: the normalized configuration
+	'''
+	
 	if conf["ETA_DECAY"]:
 		eta_min = conf["ETA"]/2
 		eta_max = min ( 1, conf["ETA"]*3/2 ) 
@@ -42,8 +55,25 @@ def normalize_configuration ( conf ):
 
 
 class RandomSearch:
+	'''
+	  Performs a random search in an hyperparameters space. It takes in input the name and ranges of each hyperparameter
+      and generates a number of configurations, each formed by choosing a random value for every hyperparameter. Then, it uses a CrossValidation to
+	  test the goodness of every generated configuration, and reports the test results.
+	  The tests are done in parallel on a given number of threads.
+	'''
 	
 	def __init__ (self, train_set, train_labels, configurations_number=100, threads_number=4, model_name="random_search_test" ):
+		'''
+		  Creates a new instance of class RandomSearch
+		  
+		  :parameters:
+		   train_set:             sequence of instance to use as train set 
+		   train_labels:          expected outputs for the instance of train_set. train_labels[i] is the expected output for the pattern train_set[i]
+		   configurations_number: the number of configurations to be generated. Default:100
+		   threads_number:        the number of threads to be spawn to parallelize the tests. Default: 4. 
+		   model_name:            a string that identifies this model.
+		'''
+		
 		self.train_set = train_set
 		self.train_labels = train_labels
 		self.configurations_number = configurations_number
@@ -52,6 +82,13 @@ class RandomSearch:
 		self.results = {}
 	
 	def test_configuration (self, conf_dict):
+		'''
+		  Test a single configuration using K-fold cross validation, and then reports the results on a file.
+		  If there was an error during the execution of the k-fold cross validation, reports it in the file, instead of the results
+		  
+		  :params:
+		    conf_dict: a dictionary with elements in the form PARAM_NAME : value
+		'''
 		params = Params.ConfigurableParams (conf_dict)
 		print ("[RandomSearch] Starting CrossValidation with id {}".format(params.ID))
 		name = self.model_name + "_" + str(params.ID)
@@ -69,6 +106,13 @@ class RandomSearch:
 		
 		
 	def perform ( self, choices_dict ):
+		'''
+		  performs the random search, given a dictionary with all the possible choices for every parameter.
+		  
+		  :params:
+		   choices_dict: a dictionary with elements in the form PARAM_NAME: [list of values]
+		'''
+		
 		print ("[RandomSearch] Initializing...")
 		print ("MODEL\tACCURACY")
 		
@@ -87,13 +131,35 @@ class RandomSearch:
 		print ("[RandomSearch] Finished.")
 		
 	def dump_results ( self ):
+		'''
+		  print the results of all the tests on a file
+		'''
 		sorted_results = sorted ( self.results.items(), key=lambda x: x[1], reverse=True )
 		with open("../dumps/" + self.model_name + "_results", "w") as fout:
 			fout.write ("RESULTS SORTED BY ACCURACY\n\n")
 			fout.write ( "\n".join( [name + "\t" + str(acc) for name, acc in sorted_results] ) )
 
 class GridSearch:
+	'''
+	  performs a grid search on an hyperparameters space.
+      It takes in input the name and ranges of each hyperparameter and generates
+	  all the possible configurations obtained by choosing all the possible combinations of values for every hyperparameter.
+	  Then, it uses a CrossValidation to test the goodness of every generated configuration, and reports the test
+	  results.
+	  The tests are done in parallel on a given number of threads.
+	'''
+	
 	def __init__ (self, train_set, train_labels, threads_number=4, model_name="grid_search_test" ):
+		'''
+		  Creates a new instance of class GridSearch
+		  
+		  :parameters:
+		   train_set:             sequence of instance to use as train set 
+		   train_labels:          expected outputs for the instance of train_set. train_labels[i] is the expected output for the pattern train_set[i]
+		   threads_number:        the number of threads to be spawn to parallelize the tests. Default: 4. 
+		   model_name:            a string that identifies this model.
+		'''
+		
 		self.train_set = train_set
 		self.train_labels = train_labels
 		self.threads_number = threads_number
@@ -101,6 +167,14 @@ class GridSearch:
 		self.results = {}
 	
 	def test_configuration (self, conf_dict):
+		'''
+		  Test a single configuration using K-fold cross validation, and then reports the results on a file.
+		  If there was an error during the execution of the k-fold cross validation, reports it in the file, instead of the results
+		  
+		  :params:
+		    conf_dict: a dictionary with elements in the form PARAM_NAME : value
+		'''
+		
 		params = Params.ConfigurableParams (conf_dict)
 		print ("[GridSearch] Starting CrossValidation with id {}".format(params.ID))
 		name = self.model_name + "_" + str(params.ID)
@@ -116,6 +190,13 @@ class GridSearch:
 		print ("[GridSearch] Ended CrossValidation with id {}".format(params.ID))
 	
 	def perform ( self, choices_dict ):
+		'''
+		  performs the grid search, given a dictionary with all the possible choices for every parameter.
+		  
+		  :params:
+		   choices_dict: a dictionary with elements in the form PARAM_NAME: [list of values]
+		'''
+		
 		print ("[GridSearch] Initializing...")
 		
 		print ("MODEL\tACCURACY")
@@ -149,13 +230,17 @@ class GridSearch:
 		print ("[GridSearch] Finished.")
 	
 	def dump_results ( self ):
+		'''
+		  print the results of all the tests on a file
+		'''
+		
 		sorted_results = sorted ( self.results.items(), key=lambda x: x[1], reverse=True )
 		#~ print ("RESULTS: {}".format(sorted_results))
 		with open("../dumps/" + self.model_name + "_results", "w") as fout:
 			fout.write ("RESULTS SORTED BY ACCURACY\n\n")
 			fout.write ( "\n".join( [name + "\t" + str(acc) for name, acc in sorted_results] ) )
 	
-	
+#unit tests
 if __name__=="__main__":
 	
 	# Iris

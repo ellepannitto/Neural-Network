@@ -1,3 +1,6 @@
+'''
+  this module Implements a regressor that uses the sklearn library to predict the output.
+'''
 
 #~ import Monk
 #~ import Iris
@@ -7,6 +10,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.neural_network import MLPRegressor
 import Statistics
 
+#unit test
 if __name__ == "__main__":
 	
 	#only one MONK
