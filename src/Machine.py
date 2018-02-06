@@ -1,3 +1,11 @@
+'''
+  Loads the three Hardware Machine dataset (regression task), normalizing
+  its features to z-scores and splitting it in two parts: train set (75%)
+  and test set(25%).
+  
+  see also: David W Aha, Dennis F Kibler, and Marc K Albert. Instance-based prediction of real-valued attributes. Vol. 5. 1989, p. 51.
+  
+'''
 
 import random
 import numpy as np

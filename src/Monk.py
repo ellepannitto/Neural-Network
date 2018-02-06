@@ -1,3 +1,10 @@
+'''
+  Loads the three Monk’s problem datasets (binary classification tasks),
+  one-hot encoding the categorical features.
+  
+  see also: Sebastian B Thrun et al. The monk’s problems: A performance comparison of different learning algorithms. Tech. rep. 1991.
+  
+'''
 
 import OneHotEncoder
 

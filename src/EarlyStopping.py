@@ -1,3 +1,7 @@
+'''
+  this module contains an utility (the class EarluStopping) to determine the best number of epochs after which the neural network training must be stopped,
+  looking at the learning curves.
+'''
 
 import numpy as np
 
@@ -10,8 +14,25 @@ from NeuralNetwork import NeuralNetwork
 import Plotting
 
 class EarlyStopping:
+	'''
+	  trains a neural network given a train and validation, then determines the best number of epochs after which the neural network training must be stopped.
+	'''
 	
 	def __init__ (self, train_set, train_labels, validation_set, validation_labels, layers_size=(5,2), params=Params):
+		'''
+		  creates an instance of EarlyStopping
+		  :params:
+		   train_set:         sequence of instance to use as train set
+		   train_labels:      expected outputs for the instance of train_set. train_labels[i] is the expected output for the pattern train_set[i]
+		   validation_set:    sequence of instance to use as validation set
+		   validation_labels: expected outputs for the instance of validation_set. validation_labels[i] is the expected output for the pattern validation_set[i]
+		   layers_size:       a tuple that represents the number and sizes of the neural network hidden layers.
+		   params: params used by the CrossValidation, EarlyStopping and NeuralNetwork.
+		           params can be an instance of the ConfigurableParams class, or the global default params, (those defined in the module Params).
+		           requested Params are:
+		            all the params required by NeuralNetwork (ETA, ETA_DECAY, ETA_DECREASING_PERIOD ETA_RANGE, LAMBDA, ALPHA, MINBATCH, MINIBATCH_SAMPLE, MAX_EPOCH)
+		    		   
+		'''
 		self.train_set = train_set
 		self.train_labels = train_labels
 		self.validation_set = validation_set
@@ -26,6 +47,39 @@ class EarlyStopping:
 
 		
 	def find_best_epoch ( self, losses ):
+		'''
+		  examines the learning curve (validation loss per epoch) to determine the point after which stop the training.
+		  
+		  :params:
+		   losses: a list with, for every position i, the loss at epoch i
+		  
+		  Since the learning is typically unstable during the first few epochs, this function tries
+		  to skip this ”spiky zone”.
+		  The parameter WINDOW allows to compare the validation loss at every
+		  epoch with the average of the losses in the previous epochs, limited by the
+		  window size.
+		  this function stops when an epoch such that the loss is
+		  greater than the average of the losses in the previous epochs minus a certain
+		  tolerance is found. The parameters WINDOW was empirically found and fixed, and the
+		  tolerance value increases linearly with the epochs: it starts with a negative
+		  MIN_TOL value (therefore allowing the error to increase in the first epochs)
+		  and it ends with a positive MAX_TOL value. In this way, this function
+		  stops if the error is not decreasing enough.
+		  In symbols, EarlyStopping decides to stop learning at epoch e* such that
+		  
+                                        WINDOW
+		                           1     ____
+		  e* = min losses[e] > --------- \     losses[e-i] - tollerance(e) 
+		        e                WINDOW  /___
+		                                  i=1  
+		  
+		  where 
+		                                 e 
+		  tollerance(e) = MIN_TOL + ----------- ( MAX_TOL - MIN_TOL )
+		                             MAX_EPOCH
+		                             
+		'''
+		
 		MIN_WINDOW = 5
 		INITIAL_TOLLERANCE = -0.05
 		FINAL_TOLLERANCE = 0.01
@@ -49,6 +103,12 @@ class EarlyStopping:
 		
 		
 	def perform (self, do_plots = False):
+		'''
+		  performs the search of the best number of epoch for the specified dataset.
+		  
+		  :params:
+		   do_plots: if True, after each completed neural network train, a plot with the learning curves is shown to the user. Default: False
+		'''
 		
 		stats = []
 		for i in range (Params.NUM_TRIALS_PER_CONFIGURATION):
@@ -80,7 +140,8 @@ class EarlyStopping:
 		self.mean_accuracy = np.average([e[1] for e in stats])
 		self.var_accuracy = np.std([e[1] for e in stats])
 		#~ print ("mean: epochs {:.0f} +/- {:.4f} accuracy {:.4f} +/- {:.4f}".format( self.mean_epochs, self.var_epochs, self.mean_accuracy, self.var_accuracy) ) 
-	
+
+# unit tests
 if __name__ == "__main__":
 	
 	# Iris

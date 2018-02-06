@@ -1,3 +1,10 @@
+'''
+  Loads the Iris dataset (multiclass classification task), one-hot encoding its
+  categorical output labels and splitting it in two parts: train set (75%) and
+  test set(25%).
+  
+  see also: Ronald A Fisher. “The use of multiple measurements in taxonomic problems”. In: Annals of human genetics 7.2 (1936), pp. 179–188.
+'''
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder

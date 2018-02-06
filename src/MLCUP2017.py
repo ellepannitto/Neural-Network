@@ -1,3 +1,12 @@
+'''
+  
+  Loads the ml-cup2017 dataset (multioutput regression task),
+  used for the project. The train outputs are normalized to z-scores, then the
+  dataset is splitted in two parts: train set (75%) and test set(25%).
+
+  (C) CIML group (University of Pisa) - Gallicchio, Micheli 2017
+  
+'''
 
 import random
 import numpy as np

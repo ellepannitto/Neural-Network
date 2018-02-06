@@ -1,3 +1,7 @@
+'''
+  Implements a model that always outputs random numbers from a given distribution. Useful for comparing the performance with other models.
+'''
+
 
 import numpy as np
 import Params
@@ -7,31 +11,71 @@ import MLCUP2017
 import Plotting
 
 class Baseline:
+	'''
+	  a model that always outputs random numbers from a given distribution. Useful for comparing the performance with other models.
+	  It can mock the training phase with a train set and a validation set, which are actually not used.
+	'''
 	
 	def __init__ (self):
+		'''
+		  creates an instance of the Baseline class
+		'''
 		self.validation_set = None
 	
 	def setInputDim (self, n):
-		
+		'''
+		  sets the input dimension.
+		  
+		  :params:
+		   n: the input dimension to set
+		'''
 		self.inputDim = n
 	
 	def setOutputDim(self, n):		
-	
+		'''
+		  sets the output dimension.
+		  
+		  :params:
+		   n: the output dimension to set
+		'''
 		self.outputDim = n
 	
 	
 	def set_train ( self, train_set, train_labels ):
+		'''
+		 specify the instances to use as train set, and the corresponding labels.
+		 
+		 :params:
+		  train_set:    sequence of instance to use as train set
+		  train_labels: expected outputs for the instance of train_set. train_labels[i] is the expected output for the pattern train_set[i]
+		'''
+		
 		self.train_set = copy.deepcopy (train_set)
 		self.train_labels = copy.deepcopy (train_labels)
 		self.setInputDim (len(train_set[0]))
 		self.setOutputDim (len(train_labels[0]))
 
 	def set_validation (self, validation_set, validation_labels):
+		'''
+		 specify the instances to use as validation set, and the corresponding labels.
+		 
+		 :params:
+		  validation_set:    sequence of instance to use as validation set
+		  validation_labels: expected outputs for the instance of validation_set. validation_labels[i] is the expected output for the pattern validation_set[i]
+		'''
+		
 		self.validation_set = copy.deepcopy (validation_set)
 		self.validation_labels = copy.deepcopy (validation_labels)
 	
 	#LOL
 	def learn ( self ):
+		'''
+		  "learns" the internal parameters from the training set for Params.MAX_EPOCH epochs, computing the MSE Loss on the training set for each epoch,
+		  and the MSE Loss and the Mean Euclidean Error on the validation set for each epoch.
+		  
+		  Actually, it does not learn, just uses random values for the output to measure MSE and Mean Euclidean Error.
+		   
+		'''
 		self.train_losses = []
 		self.validation_losses = None if self.validation_set is None else []
 		self.validation_accuracies = None if self.validation_set is None else []
@@ -61,8 +105,14 @@ class Baseline:
 	
 	#ANCORA PIÙ LOL
 	def predict (self, x):
+		'''
+		  "predicts" the output for a given input instance.
+		  
+		  Actually, it uses random number as output.
+		'''
 		return [ np.random.normal ( 0, 1 ) for _ in range(self.outputDim) ]
 
+#unit tests
 if __name__=="__main__":
 	
 	#MONKs

@@ -24,7 +24,7 @@ class NeuralNetwork:
 	'''
 	  Implements an artificial neural network, trained using the backpropagation algorithm.
 	   The network can be built with any number of input and output units, and with any number of hidden layers, each of them can have a variable size.
-	   The network train itself using a train set, and can compute the accuracy and Loss on a validation_set (which is not used for training).
+	   The network train itself using a train set, and can compute the Mean Euclidean Error and Loss on a validation_set (which is not used for training).
 	   After training, the network can predict output for (possibly unseen) patterns.  
 	'''
 	
@@ -238,7 +238,7 @@ class NeuralNetwork:
 		  learns the weights of connections between neurons that minimize the Mean Squared Error Loss function
 		  between predicted output for the train set and trai labels.
 		  
-		  Memorizes the MSE Loss on the training set for each epoch, and the MSE Loss and the Accuracy on the validation set for each epoch.
+		  Memorizes the MSE Loss on the training set for each epoch, and the MSE Loss and the Mean Euclidean Error on the validation set for each epoch.
 		'''
 		
 		self.buildGraph()

@@ -1,3 +1,7 @@
+'''
+  this module contains an implementation of a k-fold cross validation to estimate the Mean Euclidean Error on a dataset, 
+  that uses a neural network and EarlyStopping to find the best number of epoch to stop learning (the KFoldCrossValidation class).
+'''
 
 import random
 import copy
@@ -14,8 +18,34 @@ import Machine
 
 
 class KFoldCrossValidation:
+	'''
+	  Implements a k-fold cross validation on a dataset.
+	  The dataset is splitted in K equal parts, the K folds are run:
+	   At every fold, a different fraction of the dataset of size 1/K is used as validation set, the remaining part of the sataset is used as train set.
+	   EarlyStopping is used on the validation set to determine a good number of epoch to stop training.
+	  
+	  The result of this process is the mean number of epochs after which the training should be stopped, and the mean validation Mean Squared Error, obtained
+	  by considering the average results on the validation set for each fold, and the standard deviation.
+	  These results can be dumped on a file.
+	'''
 	
 	def __init__ (self, dataset, labels, K, model_name, shuffle=True, params=Params ):
+		'''
+		  creates an instance of KFoldCrossValidation.
+		  
+		  :params:
+		    dataset:    the input patterns on which the coss validation is performed.
+		    labels :    the correct labels for dataset. labels[i] is the label for dataset[i].
+		    K:          the number of fold.
+		    model_name: a string that identifies this model.
+		    shuffle:    if True, the dataset and labels will be shuffled before starting the cross validation. Default: True
+		    params:     params used by the CrossValidation, EarlyStopping and NeuralNetwork.
+		                params can be an instance of the ConfigurableParams class, or the global default params, (those defined in the module Params).
+		                requested Params are:
+		                 all the params required by NeuralNetwork (ETA, ETA_DECAY, ETA_DECREASING_PERIOD ETA_RANGE, LAMBDA, ALPHA, MINBATCH, MINIBATCH_SAMPLE, MAX_EPOCH)
+		                 LAYERS_SIZE: a tuple that represents the number and sizes of the neural network hidden layers.
+		 
+		'''
 		
 		self.dataset = copy.deepcopy (dataset)
 		self.labels = copy.deepcopy (labels)
@@ -28,7 +58,13 @@ class KFoldCrossValidation:
 			self.labels = [ self.labels[i] for i in indices ]
 		
 	def perform (self, do_plots=False):
-				
+		'''
+		  performs the K-fold cross validation.
+		  
+		  :params:
+		   do_plots: if True, after each completed neural network train, a plot with the learning curves is shown to the user. Default: False
+		'''
+			
 		#~ print ("*** Model: {} ***".format (self.model_name))
 		
 		validation_len = int(len(self.dataset)/self.K)
@@ -62,6 +98,10 @@ class KFoldCrossValidation:
 		self.var_epochs = np.std(epochs)
 	
 	def dump ( self ):
+		'''
+		  writes the k-fold results on a file named with this model's name, specified as parameter to the __init__ function.
+		  The content of the files includes: the parameters of this model, the mean Euclidean Error and the mean number of epochs
+		'''
 		
 		with open ( "../dumps/"+self.model_name, "w" ) as fout:
 			fout.write ("test finished at {}\n\n".format (time.strftime('%d/%m/%Y at %H:%M')))
@@ -85,6 +125,10 @@ class KFoldCrossValidation:
 			fout.write ("\n")
 			
 	def report_error ( self ):
+		'''
+		  writes that there was an error performing a kfold with this parameters on a file named with this model's name, specified as parameter to the __init__ function.
+		  The content of the files includes: the parameters of this model, a string that explain that there was an error.
+		'''
 		
 		with open ( "../dumps/"+self.model_name, "w" ) as fout:
 			fout.write ("test finished at {}\n\n".format (time.strftime('%d/%m/%Y at %H:%M')))
@@ -104,7 +148,7 @@ class KFoldCrossValidation:
 			fout.write ("\nTHERE WERE ERRORS WHILE EXECUTING KFOLD WITH THESE PARAMETERS\n")
 			
 
-
+#unit tests
 if __name__=="__main__":
 	
 	# Iris
